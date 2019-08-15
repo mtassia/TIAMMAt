@@ -1,0 +1,345 @@
+#!/bin/bash
+
+# LOADING PROGRAM PATHS AS VARIABLES #
+
+# HMMER command variables:
+HMMSEARCH=`which hmmsearch`
+HMMALIGN=`which hmmalign`
+HMMBUILD=`which hmmbuild`
+HMMPRESS=`which hmmpress`
+HMMSCAN=`which hmmscan`
+
+# Script command variables:
+PULL_COORDINATES=`which Pull_coordinates.py`
+SELECT_CONTIGS=`which select_contigs.pl`
+BEST_FIT_DOMAINS=`which Best_fit_domains.py`
+
+######################################
+
+# INITIALIZING VARIABLE DEFAULTS #
+
+OUTPUT_DIR=`date | awk '{print $1,$2,$3}' | sed 's/ /_/g' | sed 's/^/RDS_output_/'`
+DATASET_DIR=`pwd`
+PFAM_DIR=`echo "NULL"`
+PFAM_DB_PATH=`echo "NULL"`
+THREADS=`echo "1"`
+
+##################################
+
+# USER DEFINED VARIABLES #
+
+while getopts ":o:d:m:p:t:h" opt; do
+	case $opt in
+		o) # Set output directory name
+			OUTPUT_DIR=`echo "${OPTARG}"`
+			;;
+		d) # Set dataset directory to something other than pwd
+			DATASET_DIR=`echo "${OPTARG}"`
+			;;
+		m) # Set directory containing pfam models and seeds
+			PFAM_DIR=`echo "${OPTARG}"`
+			;;
+		p) # Set path to Pfam database
+			PFAM_DB_PATH=`echo "${OPTARG}"`
+			;;
+		t) # Set number of threads
+			THREADS=`echo "${OPTARG}"`
+			;;
+		h) # Report help information
+			printf "\n\t-d [directory]\tSpecify directory containing datasets [DEFAULT: pwd]\n"
+			printf "\t-h\t\tPrint help\n"
+			printf "\t-m [directory]\tSpecify directory containing pfam models and seeds [MANDATORY; cannot be the same directory as datasets]\n"
+			printf "\t-o [string]\tSet name for output directory [default: RDS_output_{DATE}]\n"
+			printf "\t-p [path]\tSpecify path to Pfam database [MANDATORY]\n"
+			printf "\t-t [integer]\tSpecify number of threads for hmmscan and hmmsearch\n\n"
+			exit 1
+			;;
+		\?) # Error call if invalid flag provided
+			echo "Invalid option -${OPTARG}"
+			exit 1
+			;;
+		:) # Error call if flag reguires an argument and none provided
+			echo "Flag -$OPTARG requires an argument"
+			exit 1
+			;;
+	esac
+done
+
+##########################
+
+# INPUT CHECKS #
+ERROR=`echo "FALSE"`
+
+if [[ ${PFAM_DB_PATH} == "NULL" ]]; then
+	printf "\nERROR: Path to Pfam database not provided [-p].\n"
+	ERROR=`echo "TRUE"`
+fi
+
+if [[ ${PFAM_DIR} == "NULL" ]]; then
+	printf "\nERROR: Path to directory containing target pfam models and their associated seeds not provided [-m].\n"
+	ERROR=`echo "TRUE"`
+fi
+
+if [[ ${DATASET_DIR: -1} != "/" ]]; then
+	printf "\nERROR: Dataset directory argument [-d] does not end with "/".\n"
+	ERROR=`echo "TRUE"`
+fi
+
+NUMBER_OF_FASTA=`ls ${DATASET_DIR} | grep 'fasta' | wc -l`
+if [[ ${NUMBER_OF_FASTA} == "0" ]]; then
+	printf "\nERROR: Database directory [-d] does not contain any files with '.fasta' suffix.\n"
+	ERROR=`echo "TRUE"`
+fi
+
+if [[ ${PFAM_DIR} != "NULL" ]]; then
+	NUMBER_OF_MODELS=`ls $PFAM_DIR | grep 'hmm' | wc -l`
+	if [[ ${NUMBER_OF_MODELS} == "0" ]]; then
+		printf "\nERROR: Individual Pfam model directory [-m] does not contain any files with '.hmm' suffix.\n"
+		ERROR=`echo "TRUE"`
+	fi
+fi
+
+if [[ -d "${OUTPUT_DIR}" ]]; then
+        printf "\n\tERROR: Output directory exists. Please rename and try again.\n\t"
+        ERROR=`echo "TRUE"`
+fi
+
+if [[ ${ERROR} == "FALSE" ]]; then
+	for BASE_MODEL in ${PFAM_DIR}*.hmm
+	do
+		MODEL_FILE_NAME=`echo ${BASE_MODEL} | awk -F"/" '{print $(NF)}'` # Generate a variable for the model name which excludes the path
+		MODEL_SEED_NAME=`echo "${MODEL_FILE_NAME}" | awk -F"." '{print $1}' | sed 's/$/.fasta/'` # Create a variable which possessed the name for the model seed
+
+		if ! [[ -s "${PFAM_DIR}${MODEL_SEED_NAME}" ]]; then # Loop checks for the presense of model seed fasta for each model HMM
+			printf  "\n\tERROR: ${MODEL_SEED_NAME} does not exist or is not named properly.\n"
+			ERROR=`echo "TRUE"`
+		fi
+	done
+fi
+
+if [[ ${ERROR} == "TRUE" ]]; then #If any errors above, exit.
+	printf "\nExiting...\n"
+	exit 1
+fi
+
+################
+
+#############
+ #CODE BODY# 
+#############
+
+mkdir ${OUTPUT_DIR} # Create output directories
+mkdir ${OUTPUT_DIR}/MODELS
+mkdir ${OUTPUT_DIR}/REVISED_MODELS
+mkdir ${OUTPUT_DIR}/FINAL_HMMSCAN
+
+# Initiate a script log file with useful information ####################
+echo "Output directory: $OUTPUT_DIR/" > ${OUTPUT_DIR}/SCRIPT_LOG.txt
+echo "Dataset directory: $DATASET_DIR" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+printf "Datasets to be parsed:\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+for FILE in ${DATASET_DIR}*.fasta
+        do
+                printf "\t$FILE\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+        done
+printf "Pfam models to be improved:\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+for FILE in ${PFAM_DIR}*.hmm
+        do
+                printf "\t$FILE\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+        done
+echo "Pfam database path: $PFAM_DB_PATH" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+#########################################################################
+
+$HMMPRESS $PFAM_DB_PATH # Compress Pfam database
+mv ${PFAM_DB_PATH}.h* ${OUTPUT_DIR}/MODELS/ # Move compressed Pfam database to output directory
+PFAM_DB_ID=`echo ${PFAM_DB_PATH} | awk -F"/" '{print $(NF)}'`
+echo "Compressed Pfam database created at: ${OUTPUT_DIR}/MODELS/${PFAM_DB_ID}" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+
+printf "#Dataset\tDomain\tInit_seqs_with_domain\tNum_domains_in_init\tRev_seqs_with_domain\tNum_base_domains_in_rev\tNum_rev_domains_in_rev\n" > ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt #File will contain information on the number of sequences with target domain before and after revision.
+
+for BASE_MODEL in ${PFAM_DIR}*.hmm # Iterate through models [model.hmm] within pfam model(s) directory [-m option]
+do
+	MODEL_FILE_NAME=`echo ${BASE_MODEL} | awk -F"/" '{print $(NF)}'` # Generate a variable for the model name which excludes the path
+	MODEL_NAME=`grep 'NAME' ${BASE_MODEL} | awk '{print $2}'` # Load model name into variable for future naming 
+	MODEL_ACCESSION=`grep 'ACC' ${BASE_MODEL} | awk '{print $2}'` # Load model accession into variable for future naming	
+	MODEL_SEED_NAME=`echo "${MODEL_FILE_NAME}" | awk -F"." '{print $1}' | sed 's/$/.fasta/'` # Create a variable which possessed the name for the model seed
+	
+	mkdir ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION} # Create an output directory for each of the models analyzed
+	mkdir ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION # Create a subdirectory where revised models will be built
+	cp ${PFAM_DIR}${MODEL_SEED_NAME} ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/ # Copy model seed fasta to ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION
+
+	printf "\nProcessing ${MODEL_FILE_NAME}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt # Print a helpful message to SCRIPT_LOG.txt
+	
+	$HMMPRESS ${BASE_MODEL} # Compress BASE_MODEL 
+	mv ${BASE_MODEL}.h* ${OUTPUT_DIR}/MODELS/ # Move model to output directory
+
+	printf ">\tIdentifying ${BASE_MODEL} domains among individual datasets...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	for FILE in ${DATASET_DIR}*.fasta # Search each dataset for the presence of target domain. At the end of each loop, domains will be identified and output to a directory which will be consolidated in the next loop to build a new domain model
+        do
+		DATASET_ID=`echo "${FILE}" | awk -F"/" '{print $(NF)}' | awk -F"." '{print $1}'`
+		printf ">>\tSearching ${DATASET_ID}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+
+		$HMMSEARCH --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}.domtblout ${OUTPUT_DIR}/MODELS/${MODEL_FILE_NAME} ${FILE} # Search for domain among datasets using HMMsearch and output in table format
+
+		NUMBER_OF_HITS=`grep -vc '#' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}.domtblout` # Create a count variable for the following  loop that skips any dataset with no matches to target domain
+		if [[ ${NUMBER_OF_HITS} == "0" ]]; then
+			printf ">>>\tNo matches found in ${DATASET_ID} for ${MODEL_NAME} that meet the inclusion threshold...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+			printf "${DATASET_ID}\t${MODEL_NAME}\t0\t0\n" >> ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt
+			continue
+		fi
+
+		grep -v '#' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}.domtblout | awk '{print $1}' | sort | uniq \
+		> ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.bait # Create bait file for select_contigs.pl
+		NUMBER_OF_HITS=`wc -l ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.bait | awk '{print $1}'`
+		printf ">>>\t${NUMBER_OF_HITS} sequence(s) in ${DATASET_ID} may possess ${MODEL_NAME}. Pulling sequences...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+
+		$SELECT_CONTIGS -n ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.bait ${FILE} ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.fasta # Pull fasta files for sequences containing target domain
+		rm ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.bait # Remove intermediate bait file
+		NUMBER_PULLED=`grep -c '>' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.fasta`
+		printf ">>>\t${NUMBER_PULLED} sequence(s) pulled from ${DATASET_ID} which may possess ${MODEL_NAME}. Performing full animo acid domain annotation...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	
+		if [[ ${NUMBER_OF_HITS} != ${NUMBER_PULLED} ]]; then # Print an error message if there is a mismatch in the number of sequences identified with target domain and the number of sequences pulled from the associated dataset
+			printf ">>>\t ERROR: Number of sequences in ${DATASET_ID} which contain ${MODEL_NAME} does not equal the number of sequences pulled!\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+		fi		
+
+		$HMMSCAN --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout ${OUTPUT_DIR}/MODELS/${PFAM_DB_ID} ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.fasta # Annotate sequences which potential contain target domain with all Pfam accessions
+		$BEST_FIT_DOMAINS ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout # Filter hmmscan output for only the best domain architecture per query
+		NUMBER_ANNOTATED=`awk '{print $4}' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout.besthits.tsv | sort | uniq | wc -l`
+		printf ">>>\t${NUMBER_ANNOTATED} sequence(s) from ${DATASET_ID} annotated with pfam domains and filtered for best-fit architecture.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+
+		NUMBER_OF_BESTHITS=`grep -c "$MODEL_ACCESSION" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout.besthits.tsv` #Count the number of best-hits to target domain; if there are none, skip the rest of the analysis for this dataset.
+		if [[ ${NUMBER_OF_BESTHITS} == "0" ]]; then
+                        printf ">>>\tNo best-hits found in ${DATASET_ID} for ${MODEL_NAME}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+                        printf "${DATASET_ID}\t${MODEL_NAME}\t0\t0\n" >> ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt
+			continue
+                fi
+		
+		grep "$MODEL_ACCESSION" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout.besthits.tsv | awk '{print $4, $20, $21}' > ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.${MODEL_NAME}_coordinates.tsv # Create a coordinate template indicating the regions of target domain; grep finds accession NOT Id - important for naming overlap
+		NUMBER_OF_COORDINATES=`wc -l ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.${MODEL_NAME}_coordinates.tsv | awk '{print $1}'`
+		SEQS_WITH_BESTHITS=`grep "$MODEL_ACCESSION" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout.besthits.tsv | awk '{print $4}' | sort | uniq | wc -l`
+		grep "$MODEL_ACCESSION" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout.besthits.tsv | awk '{print $4}' | sort | uniq > ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.target_list.txt #Create a file containing the list of sequences possessing the base domain from the dataset
+		printf ">>>\t${NUMBER_OF_COORDINATES} occurance(s) from ${SEQS_WITH_BESTHITS} sequences in ${DATASET_ID} for a best-fit ${MODEL_NAME}.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt 
+		printf "${DATASET_ID}\t${MODEL_NAME}\t${SEQS_WITH_BESTHITS}\t${NUMBER_OF_COORDINATES}\n" >> ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt #Output the number of unique sequences identified with target domain to a file for future comparison. VITAL NOTE: Not the number of occurances per sequence.
+
+		$PULL_COORDINATES ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.${MODEL_NAME}_coordinates.tsv $FILE # Pull domains from encompassing sequences
+		mv ${DATASET_DIR}/${DATASET_ID}.regions_extracted.fasta ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${DATASET_ID}.${MODEL_NAME}_regions_extracted.fasta
+		NUMBER_EXTRACTED=`grep -c '>' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${DATASET_ID}.${MODEL_NAME}_regions_extracted.fasta`
+		printf ">>>\t${NUMBER_EXTRACTED} region(s) successfully extracted from ${DATASET_ID} which best-hit to ${MODEL_NAME}.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	done
+	
+	printf ">\tStarting ${MODEL_NAME} adjustment...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	printf ">>\tConsolidating ${MODEL_NAME} sequences...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	for FASTA in ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/*.fasta # Loop through fasta files of extracted domains and consolidate
+	do
+		NUMBER_EXTRACTED=`grep -c '>' $FASTA`
+		DATASET_NAME=`echo "${FASTA}" | awk -F"/" '{print $(NF)}' | awk -F"." '{print $1}'`
+		printf ">>>\tWriting ${NUMBER_EXTRACTED} ${MODEL_NAME} sequence(s) from ${DATASET_NAME} to ${MODEL_NAME}_from_all_datasets.fasta\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+		cat ${FASTA} >> ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${MODEL_NAME}_from_all_datasets.fasta
+		TOTAL_NUMBER=`grep -c '>' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${MODEL_NAME}_from_all_datasets.fasta`
+		printf ">>>\t${TOTAL_NUMBER} sequence(s) contained in ${MODEL_NAME}_from_all_datasets.fasta.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	done
+
+	printf ">>\tAligning ${MODEL_NAME}_from_all_datasets.fasta to ${MODEL_FILE_NAME}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	$HMMALIGN -o ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${MODEL_NAME}_from_all_datasets.msa.trimmed.stockholm --trim ${OUTPUT_DIR}/MODELS/${MODEL_FILE_NAME} ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${MODEL_NAME}_from_all_datasets.fasta # Align domains and trim of non-homologous sites.
+
+	printf ">>\t${MODEL_NAME} alignment generated and trimmed, buidling revised hmm profile...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	$HMMBUILD -n ${MODEL_NAME}_REV --cpu ${THREADS} ${OUTPUT_DIR}/REVISED_MODELS/${MODEL_NAME}_REVISION.hmm ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${MODEL_NAME}_from_all_datasets.msa.trimmed.stockholm # Build revised domain hmm profile 	
+	
+	mkdir ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH
+	printf ">>\tCreating hmm file containing base model and revised model to be used with hmmsearch...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	cp ${BASE_MODEL} ${OUTPUT_DIR}/REVISED_MODELS/${MODEL_NAME}_base_and_revision.hmm
+	cat ${OUTPUT_DIR}/REVISED_MODELS/${MODEL_NAME}_REVISION.hmm >> ${OUTPUT_DIR}/REVISED_MODELS/${MODEL_NAME}_base_and_revision.hmm
+
+	printf ">>\tCompressing ${MODEL_NAME} model profile for new search...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	$HMMPRESS ${OUTPUT_DIR}/REVISED_MODELS/${MODEL_NAME}_base_and_revision.hmm
+
+	printf ">\tMaking new copy of Pfam database which will also contain the revised ${MODEL_NAME} for future HMMscan...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	cp ${PFAM_DB_PATH} ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/Pfam_with_${MODEL_NAME}_revisions.hmm # Create a copy of the pfam database which will contain an appended model for the revised domain
+	cat ${OUTPUT_DIR}/REVISED_MODELS/${MODEL_NAME}_REVISION.hmm >> ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/Pfam_with_${MODEL_NAME}_revisions.hmm
+	printf ">\tCompressing new Pfam database file...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	$HMMPRESS ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/Pfam_with_${MODEL_NAME}_revisions.hmm	
+
+
+	printf ">\tRe-searching datasets for domain of interest...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	for FILE in ${DATASET_DIR}*.fasta # Search each dataset for the presence of target domain (revised and base).
+        do
+                DATASET_ID=`echo "${FILE}" | awk -F"." '{print $1}' | awk -F"/" '{print $(NF)}'`
+                printf ">>\tRe-searching ${DATASET_ID}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+		
+		$HMMSEARCH --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}_base_and_revised.domtblout ${OUTPUT_DIR}/REVISED_MODELS/${MODEL_NAME}_base_and_revision.hmm ${FILE}		
+		
+		NUMBER_OF_HITS=`grep -vc '#' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}_base_and_revised.domtblout` # Count number of hits to target domain (base and revised)
+                if [[ ${NUMBER_OF_HITS} == "0" ]]; then
+                        printf ">>>\tNo matches found in ${DATASET_ID} for base or revised ${MODEL_NAME} that meet the inclusion threshold...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+                        sed -i  "/${DATASET_ID}\t${MODEL_NAME}\t/s/$/\t0\t0\t0/" ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt
+			continue
+                fi	
+		
+		grep -v '#' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}_base_and_revised.domtblout | awk '{print $1}' | sort | uniq \
+                > ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.bait # Create bait file for select_contigs.pl
+                NUMBER_OF_HITS=`wc -l ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.bait | awk '{print $1}'`
+                printf ">>>\t${NUMBER_OF_HITS} sequence(s) in ${DATASET_ID} may possess base or revised ${MODEL_NAME}. Pulling sequences...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	
+		$SELECT_CONTIGS -n ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.bait ${FILE} ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.fasta
+                rm ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.bait # Remove intermediate bait file
+                NUMBER_PULLED=`grep -c '>' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.fasta`
+                printf ">>>\t${NUMBER_PULLED} sequence(s) pulled from ${DATASET_ID} which may possess base and/or revised ${MODEL_NAME}. Performing full animo acid domain annotation...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt		
+	
+		$HMMSCAN --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/Pfam_with_${MODEL_NAME}_revisions.hmm ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.fasta #Perform hmmscan using pfam database with appended model revision
+		$BEST_FIT_DOMAINS ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout # Filter output for only the best domain architecture per query
+                NUMBER_ANNOTATED=`awk '{print $4}' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout.besthits.tsv | sort | uniq | wc -l`
+                printf ">>>\t${NUMBER_ANNOTATED} sequence(s) from ${DATASET_ID} annotated with pfam domains and filtered for best-fit architecture.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	
+		egrep "${MODEL_ACCESSION}|${MODEL_NAME}_REV" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout.besthits.tsv | awk '{print $4}' | sort | uniq > ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present_in_hmmscan_against_all_Pfam.txt #Create select_contigs bait
+		egrep "${MODEL_ACCESSION}|${MODEL_NAME}_REV" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout.besthits.tsv | awk '{print $4}' | sort | uniq > ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.target_list.txt # Create a list of sequence headers containing base or revised domain
+		comm -13 ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.target_list.txt ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.target_list.txt > ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}.sequences_only_identified_after_revision.txt #Create a file which contains the header for sequences found to have revised domain ONLY after revision
+		
+		NUMBER_OF_NEW_SEQS=`wc -l ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}.sequences_only_identified_after_revision.txt | awk '{print $1}'`
+		NUMBER_OF_BEST_HITS=`wc -l ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present_in_hmmscan_against_all_Pfam.txt | awk '{print $1}'` 		
+		NUMBER_OF_BASE_MODEL=`grep -c "${MODEL_ACCESSION}" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout.besthits.tsv`
+		NUMBER_OF_REVISED_MODEL=`grep -c "${MODEL_NAME}_REV" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout.besthits.tsv`
+	
+		if [[ ${NUMBER_OF_BEST_HITS} == "0" ]]; then # If there are no best-hits to revised or base domain model, skip the rest of the loop for this dataset
+                        printf ">>>\tNo best-hits found in ${DATASET_ID} for base or revised ${MODEL_NAME}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+                        sed -i  "/${DATASET_ID}\t${MODEL_NAME}\t/s/$/\t0\t0\t0/" ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt
+			continue
+                fi
+		
+		printf ">>>\t${NUMBER_OF_BEST_HITS} sequence(s) from ${DATASET_ID} contain(s) a best-fit base or revised ${MODEL_NAME}.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+		printf ">>>\t${NUMBER_OF_NEW_SEQS} new sequence(s) possess target domain after model revision.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+		sed -i "/${DATASET_ID}\t${MODEL_NAME}\t/s/$/\t${NUMBER_OF_BEST_HITS}\t${NUMBER_OF_BASE_MODEL}\t${NUMBER_OF_REVISED_MODEL}/" ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt # Updated identification statistics with revised data
+	
+		$SELECT_CONTIGS	-n ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present_in_hmmscan_against_all_Pfam.txt $FILE ${OUTPUT_DIR}/FINAL_HMMSCAN/${DATASET_ID}.${MODEL_NAME}_present_after_revision.fasta # Create a fasta file which will be used in the final hmmscan
+		rm ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present_in_hmmscan_against_all_Pfam.txt #Deleting bait intermediate file
+		
+		NUMBER_OF_SEQS=`grep -c '>' ${OUTPUT_DIR}/FINAL_HMMSCAN/${DATASET_ID}.${MODEL_NAME}_present_after_revision.fasta`
+		printf ">>>\t${NUMBER_OF_SEQS} sequence(s) written to ${DATASET_ID}.${MODEL_NAME}_present_after_revision.fasta which will be used for final hmmscan.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+		
+	done
+done
+
+printf "Finished processing ${MODEL_FILE_NAME}.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+printf "\nAnnotate proteins containing domains of interest (both traditional and revised)...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+printf ">\tCreating copy of Pfam database for which revised model(s) will be appended...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+cp ${PFAM_DB_PATH} ${OUTPUT_DIR}/FINAL_HMMSCAN/Pfam_with_all_revisions.hmm # Copy pfam directory to revised directory so it can be modified with revised model
+
+for MODEL in ${OUTPUT_DIR}/REVISED_MODELS/*_REVISION.hmm #Loop will add revised models to pfam database file before compressing again
+do
+	MODEL_FILENAME=`echo "${MODEL}" | awk -F"/" '{print $(NF)}'`
+	cat ${MODEL} >> ${OUTPUT_DIR}/FINAL_HMMSCAN/Pfam_with_all_revisions.hmm
+	printf ">>\tAppended ${MODEL_FILENAME} to Pfam_with_revisions.hmm\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+done
+
+printf ">\tCompressing revised Pfam database...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+$HMMPRESS ${OUTPUT_DIR}/FINAL_HMMSCAN/Pfam_with_all_revisions.hmm 
+
+printf ">\tBeginning annotation of sequences containing domains of interest.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+for FILE in ${OUTPUT_DIR}/FINAL_HMMSCAN/*.fasta
+do
+	DATASET_ID=`echo "${FILE}" | awk -F"/" '{print $(NF)}' | awk -F"." 'BEGIN{OFS = "."} {print $1, $2}'`
+	printf ">>\tProcessing ${DATASET_ID}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	$HMMSCAN --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/FINAL_HMMSCAN/${DATASET_ID}.hmmscan_vs_revised_Pfam.domtblout ${OUTPUT_DIR}/FINAL_HMMSCAN/Pfam_with_all_revisions.hmm ${FILE} # Final HMMscan
+	$BEST_FIT_DOMAINS ${OUTPUT_DIR}/FINAL_HMMSCAN/${DATASET_ID}.hmmscan_vs_revised_Pfam.domtblout # Pull only the best hit per region for final output
+	printf ">>\tFinished running HMMscan on ${DATASET_ID} and parsed best-hit domains.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+done
+
+printf "\nAnalysis complete.\n\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
