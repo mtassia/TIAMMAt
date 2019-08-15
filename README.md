@@ -30,3 +30,6 @@ It's recommended that for all path arguments, absolute paths be used.
 ```
 ImprovedRelaxedDomainSearch -d /path/to/Proteomes/ -m /path/to/Target_Pfams/ -p /path/to/Pfam-A.hmm -t 4
 ```
+
+### OUTPUTS:
+
