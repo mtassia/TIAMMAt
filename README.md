@@ -55,8 +55,8 @@ RDS_output_[WkDay]_[Month]_[Year]/ #Default output directory created by program
   SCRIPT_LOG.txt #Data log reporting operations and immediate results during program execution
   
 RDS_output_[WkDay]_[Month]_[Year]/MODELS/ #Directory containing compressed models for initial HMMsearch step
-  PF00069_Pkinase.hmm.* #Four files associated with initial Pkinase domain compression from HMMpress
-  PF00420_Ubiquitin.hmm.* #Four files associated with domain initial Ubiquitin compression from HMMpress
+  PF00069_Pkinase.hmm.h3* #Four files associated with initial Pkinase domain compression from HMMpress
+  PF00420_Ubiquitin.hmm.h3* #Four files associated with domain initial Ubiquitin compression from HMMpress
   
 RDS_output_[WkDay]_[Month]_[Year]/Pkinase_PF00069/ #Output directory for Pkinase domain revision
   ProteomeA.hmmsearch_for_Pkinase.domtblout #HMMsearch domain table output for potential Pkinase domains in ProteomeA.fasta
@@ -76,7 +76,7 @@ RDS_output_[WkDay]_[Month]_[Year]/Pkinase_PF00069/MODEL_REVISION/ #Directory use
 
 RDS_output_[WkDay]_[Month]_[Year]/Pkinase_PF00069/SECOND_SEARCH/ #Directory contains search for Pkinase domains following revision
   Pfam_with_Pkinase_revisions.hmm #Pfam database appended with revised domain profile
-  Pfam_with_Pkinase_revisions.hmm.* #Four files associated with Pfam_with_Pkinase_revisions.hmm compression
+  Pfam_with_Pkinase_revisions.hmm.h3* #Four files associated with Pfam_with_Pkinase_revisions.hmm compression
   ProteomeA.hmmsearch_for_Pkinase_base_and_revised.domtblout #HMMsearch domain table output for potential Pkinase domains (either base or revised) in ProteomeA.fasta
   ProteomeA.Pkinase_base_and_revised_present.fasta #Fasta file containing sequences with potential Pkinase domains (base or revised) found in ProteomeA.fasta
   ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.domtblout #HMMscan output (domain table) of above sequences annotated with all Pfam domains (including revised Pkinase domain)
@@ -91,11 +91,16 @@ RDS_output_[WkDay]_[Month]_[Year]/Ubiquitin_PF00240/ #Output directory for Ubiqu
 RDS_output_[WkDay]_[Month]_[Year]/REVISED_MODELS/ #Directory containing all revised models
   Pkinase_REVISION.hmm #Revised Pkinase domain HMM profile
   Pkinase_base_and_revision.hmm #Concatonation of base and revised Pkinase domain HMM profiles
-  Pkinase_base_and_revision.hmm.* #Four files associated with Pkinase_base_and_revision.hmm compression
+  Pkinase_base_and_revision.hmm.h3* #Four files associated with Pkinase_base_and_revision.hmm compression
   Ubiquitin_REVISION.hmm #Revised Ubiquitin domain HMM profile
   Ubiquitin_base_and_revision.hmm #Concatonation of base and revised Ubiquitin domain HMM profiles
-  Ubiquitin_base_and_revision.hmm.* #Four files associated with Ubiquitin_base_and_revision.hmm compression
+  Ubiquitin_base_and_revision.hmm.h3* #Four files associated with Ubiquitin_base_and_revision.hmm compression
   
 RDS_output_[WkDay]_[Month]_[Year]/FINAL_HMMSCAN/ #Directory containing domain annotations following all domain revisions
-
+  Pfam_with_all_revisions.hmm #Pfam database appanded with all revised domain profiles
+  Pfam_with_all_revisions.hmm.h3* #Four files associated with Pfam_with_all_revisions.hmm compression
+  ProteomeA.Pkinase_present_after_revision.fasta #Sequences associated with ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.target_list.txt above
+  ProteomeA.Pkinase_present_after_revision.hmmscan_vs_revised_Pfam.domtblout #HMMscan output (domain table) of above sequences annotated with all Pfam domains (including all revised domains)
+  ProteomeA.Pkinase_present_after_revision.hmmscan_vs_revised_Pfam.domtblout.besthits.tsv #Best-hits file associated with the above file
+  [Above 3 repeated for ProteomeA+Ubiquitin, ProteomeB+Pkinase, and ProteomeB+Ubiquitin]
 ```
