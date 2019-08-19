@@ -89,5 +89,13 @@ RDS_output_[WkDay]_[Month]_[Year]/Ubiquitin_PF00240/ #Output directory for Ubiqu
   [Same output structure as delineated for Pkinase]
   
 RDS_output_[WkDay]_[Month]_[Year]/REVISED_MODELS/ #Directory containing all revised models
+  Pkinase_REVISION.hmm #Revised Pkinase domain HMM profile
+  Pkinase_base_and_revision.hmm #Concatonation of base and revised Pkinase domain HMM profiles
+  Pkinase_base_and_revision.hmm.* #Four files associated with Pkinase_base_and_revision.hmm compression
+  Ubiquitin_REVISION.hmm #Revised Ubiquitin domain HMM profile
+  Ubiquitin_base_and_revision.hmm #Concatonation of base and revised Ubiquitin domain HMM profiles
+  Ubiquitin_base_and_revision.hmm.* #Four files associated with Ubiquitin_base_and_revision.hmm compression
   
+RDS_output_[WkDay]_[Month]_[Year]/FINAL_HMMSCAN/ #Directory containing domain annotations following all domain revisions
+
 ```
