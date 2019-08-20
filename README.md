@@ -2,7 +2,10 @@
 #### Revising domain profile HMMs using empiracle datasets to capture sequence variation in non-model species and improve homologous sequence identification. 
 
 ---
-Description: [More to come]
+### DESCRIPTION: 
+_Preamble: This pipeline and it's application to immune-gene evolution is in prep for publication_
+
+In its current state, Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds appear to reflect a heavy biomedical species bias; and, as such, standard Pfam-A domain models appear to underestimate the number of homologuos domains within non-model species transcriptome/genome datasets. This program aims to improve species/sequence diversity intrinsically captured within individual Pfam domain profile HMMs.     
 
 ---
 ### PIPELINE:
