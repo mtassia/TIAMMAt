@@ -5,7 +5,12 @@
 ### DESCRIPTION: 
 _Preamble: This pipeline and it's application to immune-gene evolution is in prep for publication_
 
-In its current state, Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds appear to reflect a heavy biomedical species bias; and, as such, standard Pfam-A domain models appear to underestimate the number of homologuos domains within non-model species transcriptome/genome datasets. This program aims to improve species/sequence diversity intrinsically captured within individual Pfam domain profile HMMs.     
+In its current state, Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds appear to reflect a heavy biomedical species bias; and, as such, standard Pfam-A domain models appear to underestimate the number of homologuos domains within non-model species transcriptome/genome datasets. RelaxedDomainSearch aims to improve species/sequence diversity intrinsically captured within individual Pfam domain profile HMMs.
+
+##### The program is organized into three main blocks (detailed diagram can be seen below): 
+1) Loop among amino acid datasets for best-hit motifs to the target domain(s) 
+2) Loop through each domain profile HMM for revision to capture sequence variation of homologous domains within target datasets
+3) Final scan among amino acid datasets for all Pfam-A entries included all revised domains 
 
 ---
 ### PIPELINE:
@@ -17,6 +22,7 @@ In its current state, Pfam-A profile HMMs are derived of representative seed ali
 - `Pull_coordinates.py` (Included in this repo)
 - `Select_contigs.pl` (Included in this repo)
 - `Best_fit_domains.py` (Included in this repo)
+
 Each of these programs must be installed into `$PATH`
 
 ---
