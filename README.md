@@ -1,8 +1,7 @@
 # RelaxedDomainSearch
+#### Revising domain profile HMMs using empiracle datasets to capture sequence variation in non-model species and improve homologous sequence identification. 
+
 ---
-
-Code associated with domain HMM model revision for use in non-model species protein evolution studies.
-
 Description: [More to come]
 
 ---
