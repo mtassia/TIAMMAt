@@ -9,8 +9,6 @@ do
 	FASTAFILE_ID=`echo "${TAXON_ID}.${DOMAIN_ID}_base_and_revised_present.fasta"`
 	
 	if [[ -s ${NOVEL_LIST} ]]; then #Run two different loops depending on whether novel seqs were identfied
-		cp ${FASTAFILE_ID} ${TAXON_ID}.${DOMAIN_ID}_base_and_revised_present.original_names.fasta #Create a file of the original naming convention
-
 		sed "/>/s/>.*/&_${DOMAIN_ID}/" ${FASTAFILE_ID} > ${FASTAFILE_ID}.renaming_tmp #Sed to add domain IDs to the end of each fasta header and make a new file for renamed seqs
 
 		while read NOVEL_ACCESSION #Read the newly identified seq list
@@ -19,7 +17,6 @@ do
 		done < ${NOVEL_LIST}
 		mv ${FASTAFILE_ID}.renaming_tmp ${TAXON_ID}.${DOMAIN_ID}_base_and_revised_present.IDs_renamed.fasta #Rename the temporary renaming file
 	else
-		cp ${FASTAFILE_ID} ${TAXON_ID}.${DOMAIN_ID}_base_and_revised_present.original_names.fasta #Create a file of the original naming convention
 		sed "/>/s/>.*/&_${DOMAIN_ID}/" ${FASTAFILE_ID} > ${FASTAFILE_ID}.IDs_renamed.fasta #For fasta files without newly identfied sequences, append the domain ID to header.
 	fi
 done
