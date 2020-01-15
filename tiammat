@@ -18,7 +18,7 @@ BEST_FIT_DOMAINS=`which Best_fit_domains.py`
 
 # INITIALIZING VARIABLE DEFAULTS #
 
-OUTPUT_DIR=`date | awk '{print $1,$2,$3}' | sed 's/ /_/g' | sed 's/^/RDS_output_/'`
+OUTPUT_DIR=`date | awk '{print $1,$2,$3}' | sed 's/ /_/g' | sed 's/^/TIAMMAt_output_/'`
 DATASET_DIR=`pwd`
 PFAM_DIR=`echo "NULL"`
 PFAM_DB_PATH=`echo "NULL"`
@@ -49,7 +49,7 @@ while getopts ":o:d:m:p:t:h" opt; do
 			printf "\n\t-d [directory]\tSpecify directory containing datasets [DEFAULT: pwd]\n"
 			printf "\t-h\t\tPrint help\n"
 			printf "\t-m [directory]\tSpecify directory containing pfam models and seeds [MANDATORY; cannot be the same directory as datasets]\n"
-			printf "\t-o [string]\tSet name for output directory [default: RDS_output_{DATE}]\n"
+			printf "\t-o [string]\tSet name for output directory [default: TIAMMAt_output_{DATE}]\n"
 			printf "\t-p [path]\tSpecify path to Pfam database [MANDATORY]\n"
 			printf "\t-t [integer]\tSpecify number of threads for hmmscan and hmmsearch\n\n"
 			exit 1
