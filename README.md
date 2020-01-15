@@ -39,8 +39,9 @@ It's recommended that for all path arguments, absolute paths be used.
 -t [integer]    Specify number of threads for hmmscan and hmmsearch
 ```
 
-**Example Command:** 
-```
+**Example Command:**
+``` 
+>>>>>>> 41eb2033159717747ddd2098a904498628cb7106
 tiammat -d /path/to/Proteomes/ -m /path/to/Target_Pfams/ -p /path/to/Pfam-A.hmm -t 4
 ```
 
