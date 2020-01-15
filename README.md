@@ -1,4 +1,5 @@
-# RelaxedDomainSearch
+# TIAMMAt: Taxon-Informed Adjustment of Markov-Model Attributes
+
 #### Revising domain profile HMMs using empiracle datasets to capture sequence variation in non-model species and improve homologous sequence identification. 
 
 ---
