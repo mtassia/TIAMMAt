@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Execute in SECOND_SEARCH directory from IRDS
+#Execute in SECOND_SEARCH directory from TIAMMAt to rename sequences and incorperate newly identified into headers
 
 for NOVEL_LIST in *.sequences_only_identified_after_revision.txt
 do
