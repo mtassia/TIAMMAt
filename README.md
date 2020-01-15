@@ -6,7 +6,7 @@
 ### DESCRIPTION: 
 _Preamble: This pipeline and it's application to immune-gene evolution is in prep for publication_
 
-In its current state, Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds appear to reflect a heavy biomedical species bias; and, as such, standard Pfam-A domain models appear to underestimate the number of homologuos domains within non-model species transcriptome/genome datasets. RelaxedDomainSearch aims to improve species/sequence diversity intrinsically captured within individual Pfam domain profile HMMs.
+In its current state, Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds appear to reflect a heavy biomedical species bias; and, as such, standard Pfam-A domain models appear to underestimate the number of homologuos domains within non-model species transcriptome/genome datasets. TIAMMAt aims to improve species/sequence diversity intrinsically captured within individual Pfam domain profile HMMs.
 
 ##### The program is organized into three main blocks (detailed diagram can be seen below): 
 1) Loop among amino acid datasets for best-hit motifs to the target domain(s) 
@@ -40,8 +40,8 @@ It's recommended that for all path arguments, absolute paths be used.
 ```
 
 **Example Command:** 
-```
-ImprovedRelaxedDomainSearch -d /path/to/Proteomes/ -m /path/to/Target_Pfams/ -p /path/to/Pfam-A.hmm -t 4
+``` 
+tiammat -d /path/to/Proteomes/ -m /path/to/Target_Pfams/ -p /path/to/Pfam-A.hmm -t 4
 ```
 
 ---
