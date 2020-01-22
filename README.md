@@ -20,9 +20,9 @@ In its current state, Pfam-A profile HMMs are derived of representative seed ali
 ---
 ### DEPENDENCIES:
 - `HMMer` (available at http://hmmer.org/)
-- `Pull_coordinates.py` (Included in this repo)
-- `Select_contigs.pl` (Included in this repo)
-- `Best_fit_domains.py` (Included in this repo)
+- `Pull_coordinates.py` (Included in this repo; requires `Python2.7` + `BioPython` module)
+- `Select_contigs.pl` (Included in this repo; requires `Perl`)
+- `Best_fit_domains.py` (Included in this repo; requires `Python3+` + `re` and `sys` modules)
 
 Each of these programs must be installed into `$PATH`
 
