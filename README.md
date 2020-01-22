@@ -115,8 +115,13 @@ TIAMMAt_output_[WkDay]_[Month]_[Year]/FINAL_HMMSCAN/ #Directory containing domai
 ---
 ### SUPPORT SCRIPTS:
 
-**`Domain_svgwrite.py`:** Uses the `\*.besthits.tsv` input from TIAMMAt and generates a domain diagram object per annotated sequence into a single editable svg canvas.
+**`Domain_svgwrite.py`:** Uses the `[name].besthits.tsv` input from TIAMMAt and generates a domain diagram object per annotated sequence into a single editable svg canvas.
+* *DEPENDENCIES:* `Python3+` + `re`, `sys`, `svgwrite`
+* *USAGE:* `python3 Domain_svgwrite.py [name].besthit.tsv`
+* *OUTPUT:* `[name].besthits.tsv.domain_diagram.svg`
 
 **`ID_novel_seqs.sh`:** Can be executed in the `SECOND_SEARCH` directory to rename headers to incorperate the revised domain and flag newly identified sequences with a 'NOV' tag.
+* *USAGE:* Execute command in `SECOND_SEARCH/` directory
+* *OUTPUT:* `[Taxon_ID].[Domain_ID]_base_and_revised_present.IDs_renamed.fasta`
 
 
