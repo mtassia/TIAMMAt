@@ -91,7 +91,7 @@ PREVIOUS_QUERY=[] #Creates a list variable that will be used to compare lines as
 #For-loop will loop through ANNOTATION, per line from DOMTBLOUT. Each loop will load a 22-field list object into QUERY
 for QUERY in ANNOTATION_LIST:
 
-	if (QUERY[6] > 0.01) or (QUERY[11] > 0.01): #If per-sequence e-value > 0.01 or per-domain e-value > 0.01, inclusion threshold not met and line is skipped
+	if (QUERY[6] > 0.01) or (QUERY[11] > 0.01) or (QUERY[12] > 0.01): #If per-sequence e-value > 0.01 or per-domain e-value > 0.01, inclusion threshold not met and line is skipped
 		continue
 
 	#If reading first data line or reading a line describing a new sequence from the previous line, following block will build a range list according to the sequence's length to build best domain-architecture where no two domains can overlap (i.e., best-hit domains only kept per sequence)
