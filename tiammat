@@ -18,7 +18,7 @@ BEST_FIT_DOMAINS=`which Best_fit_domains.py`
 
 # INITIALIZING VARIABLE DEFAULTS #
 
-OUTPUT_DIR=`date | awk '{print $1,$2,$3}' | sed 's/ /_/g' | sed 's/^/TIAMMAt_output_/'`
+OUTPUT_DIR=`date | awk '{print $2,$3,$(NF)}' | sed 's/ /_/g' | sed 's/^/TIAMMAt_output_/'`
 DATASET_DIR=`pwd`
 PFAM_DIR=`echo "NULL"`
 PFAM_DB_PATH=`echo "NULL"`
