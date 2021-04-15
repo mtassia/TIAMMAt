@@ -45,8 +45,8 @@ tiammat -d /path/to/Proteomes/ -m /path/to/Target_Pfams/ -p /path/to/Pfam-A.hmm 
 ```
 
 ---
-### OUTPUTS:
-**For the following inputs:**
+### INPUTS:
+**Example input structure:**
 - `-d /path/to/Proteomes/` contains:
   >- ProteomeA.fasta
   >- ProteomeB.fasta
@@ -57,7 +57,8 @@ tiammat -d /path/to/Proteomes/ -m /path/to/Target_Pfams/ -p /path/to/Pfam-A.hmm 
   >- PF00240_Ubiquitin.hmm
 - `-o [default]`
 
-**Outputs the following:**
+### OUTPUTS:
+**Output structure:**
 ```bash
 TIAMMAt_output_[WkDay]_[Month]_[Year]/ #Default output directory created by program
   1. IDENTIFICATION_STATISTICS.txt #TSV containing domain counts before & after revision
