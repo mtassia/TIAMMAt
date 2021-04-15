@@ -57,6 +57,9 @@ tiammat -d /path/to/Proteomes/ -m /path/to/Target_Pfams/ -p /path/to/Pfam-A.hmm 
   >- PF00240_Ubiquitin.hmm
 - `-o [default]`
 
+**About inputs:**
+For each domain of interest, the seed (an unaligned fasta file obtainable from the "**Alignments**" section for any domain in Pfam) and the model (raw HMM obtained from the "**Curation & model**" section for any given domain in Pfam) must be downloaded from the Pfam server (http://pfam.xfam.org/). Within the model directory (`-m`), the prefix naming convention must be identical for each domain (e.g., *PF00069_Pkinase*.fasta & *PF00069_Pkinase*.hmm). Additionally, ensure the domain models and the Pfam database input (`-p`) are the same version before running TIAMMAt. 
+
 ### OUTPUTS:
 **Output structure:**
 ```bash
@@ -115,6 +118,7 @@ TIAMMAt_output_[WkDay]_[Month]_[Year]/FINAL_HMMSCAN/ #Directory containing domai
 
 ---
 ### SUPPORT SCRIPTS:
+These programs must be manually executed - they are not run by TIAMMAt.
 
 **`Domain_svgwrite.py`:** Uses the `[name].besthits.tsv` input from TIAMMAt and generates a domain diagram object per annotated sequence into a single editable svg canvas.
 * *DEPENDENCIES:* `Python3+` + `re`, `sys`, `svgwrite`
