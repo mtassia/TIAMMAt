@@ -117,11 +117,11 @@ TIAMMAt_output_[WkDay]_[Month]_[Year]/FINAL_HMMSCAN/ #Directory containing domai
   36. [Repeat (33-35) for each ProteomeA+Ubiquitin, ProteomeB+Pkinase, and ProteomeB+Ubiquitin]
 ```
 
-Summary statistics in `IDENTIFICATION_STATISTICS.txt` is a useful metric for checking the results of TIAMMAt. For easy viewing, try `column -t IDENTIFICATION_STATISTICS.txt`.
+Summary statistics in `IDENTIFICATION_STATISTICS.txt` are a useful metric for checking the results of TIAMMAt. For easy viewing, try `column -t IDENTIFICATION_STATISTICS.txt`.
 
-Users primarily interested in the revised model can find their revised models in the `REVISED_MODELS` directory, and those interested in the number of domain-containing proteins per dataset can find those data in both the `FINAL_HMMSCAN` directory.
+Users primarily interested in the revised domain profile-HMMs can find their revised models in the `REVISED_MODELS` directory, and those interested in the number of domain-containing proteins per dataset can find those data in the `FINAL_HMMSCAN` directory.
 
-To check input datasets, the top lines of `SCRIPT_LOG.txt` report the input files.
+To check input, the top lines of `SCRIPT_LOG.txt` report the input files.
 
 ---
 ### KNOWN ISSUES:
