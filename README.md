@@ -112,6 +112,9 @@ TIAMMAt_output_[WkDay]_[Month]_[Year]/FINAL_HMMSCAN/ #Directory containing domai
   35. ProteomeA.Pkinase_present_after_revision.hmmscan_vs_revised_Pfam.domtblout.besthits.tsv #Best-hits file associated with the above file
   36. [Repeat (33-35) for each ProteomeA+Ubiquitin, ProteomeB+Pkinase, and ProteomeB+Ubiquitin]
 ```
+---
+### KNOWN ISSUES:
+* `-d` argument cannot take current directory shortcut, `./` (i.e., `./[directory_name]` does not work; `-d` works with absolute path and assumes `pwd` as relative path (i.e., `[directory_name]` is `./[directory_name]`)
 
 ---
 ### SUPPORT SCRIPTS:
