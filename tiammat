@@ -14,9 +14,9 @@ HMMPRESS=`which hmmpress`
 HMMSCAN=`which hmmscan` 
 
 # Script command variables:
-PULL_COORDINATES=`which Pull_coordinates.py`
-SELECT_CONTIGS=`which select_contigs.pl`
-BEST_FIT_DOMAINS=`which Best_fit_domains.py`
+PULL_COORDINATES=`echo ${TIAMMAT_DIR}/Pull_coordinates.py`
+SELECT_CONTIGS=`echo ${TIAMMAT_DIR}/select_contigs.pl`
+BEST_FIT_DOMAINS=`echo ${TIAMMAT_DIR}/Best_fit_domains.py`
 
 ######################################
 
