@@ -49,6 +49,8 @@ tiammat -d /path/to/Proteomes/ -m /path/to/Target_Pfams/ -p /path/to/Pfam-A.hmm 
 
 ---
 ### INPUTS:
+For each domain of interest, the seed (an unaligned fasta file obtainable from the "**Alignments**" section for any domain in Pfam) and the model (raw HMM obtained from the "**Curation & model**" section for any given domain in Pfam) must be downloaded from the Pfam server (http://pfam.xfam.org/). Within the model directory (`-m`), the prefix naming convention must be identical for each domain (e.g., *PF00069_Pkinase*.fasta & *PF00069_Pkinase*.hmm). Additionally, ensure the domain models and the Pfam database input (`-p`) are the same version before running TIAMMAt.
+
 **Example input structure:**
 - `-d /path/to/Proteomes/` contains:
   >- ProteomeA.fasta
@@ -62,8 +64,6 @@ tiammat -d /path/to/Proteomes/ -m /path/to/Target_Pfams/ -p /path/to/Pfam-A.hmm 
 - `-p /path/to/Pfam.hmm`
 
 Currently, absolute paths for `-d`, `-m`, and `-p` are recommended. See *Known Issues* section below.
-
-For each domain of interest, the seed (an unaligned fasta file obtainable from the "**Alignments**" section for any domain in Pfam) and the model (raw HMM obtained from the "**Curation & model**" section for any given domain in Pfam) must be downloaded from the Pfam server (http://pfam.xfam.org/). Within the model directory (`-m`), the prefix naming convention must be identical for each domain (e.g., *PF00069_Pkinase*.fasta & *PF00069_Pkinase*.hmm). Additionally, ensure the domain models and the Pfam database input (`-p`) are the same version before running TIAMMAt.
 
 ### OUTPUTS:
 **Output structure:**
