@@ -55,7 +55,10 @@ tiammat -d /path/to/Proteomes/ -m /path/to/Target_Pfams/ -p /path/to/Pfam-A.hmm 
   >- PF00069_Pkinase.hmm
   >- PF00240_Ubiquitin.fasta
   >- PF00240_Ubiquitin.hmm
-- `-o [default]`
+- `[-o default]`
+- `-p /path/to/Pfam.hmm`
+
+Currently, absolute paths for `-d`, `-m`, and `-p` are recommended. See *Known Issues* section below.
 
 ### OUTPUTS:
 **Outputs the following:**
