@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2.7
 #Input1=Coordinate_file, #Input2=Fasta_file
 
 from Bio import SeqIO

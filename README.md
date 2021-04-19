@@ -1,17 +1,17 @@
 # TIAMMAt: Taxon-Informed Adjustment of Markov-Model Attributes
 
-#### Revising domain profile HMMs using empirical datasets to capture sequence variation in non-model species and improve homologous sequence identification. 
+#### Revising domain profile HMMs using empirical datasets to capture sequence variation in non-model species and improve homologous sequence identification.
 
 ---
-### DESCRIPTION: 
+### DESCRIPTION:
 _Preamble: This pipeline and it's application to immune-gene evolution is in prep for publication_
 
 In its current state, Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds appear to reflect a heavy biomedical species bias; and, as such, standard Pfam-A domain models appear to underestimate the number of homologuos domains within non-model species transcriptome/genome datasets. TIAMMAt aims to improve species/sequence diversity intrinsically captured within individual Pfam domain profile HMMs.
 
-##### The program is organized into three main blocks (detailed diagram can be seen below): 
-1) Loop among amino acid datasets for best-hit motifs to the target domain(s) 
+##### The program is organized into three main blocks (detailed diagram can be seen below):
+1) Loop among amino acid datasets for best-hit motifs to the target domain(s)
 2) Loop through each domain profile HMM for revision to capture sequence variation of homologous domains within target datasets
-3) Final scan among amino acid datasets for all Pfam-A entries included all revised domains 
+3) Final scan among amino acid datasets for all Pfam-A entries included all revised domains
 
 ---
 ### PIPELINE:
@@ -19,16 +19,15 @@ In its current state, Pfam-A profile HMMs are derived of representative seed ali
 
 ---
 ### DEPENDENCIES:
-- `HMMer` (available at http://hmmer.org/)
-- `Pull_coordinates.py` (Included in this repo; requires `Python2.7` + `BioPython` module)
+- `Pull_coordinates.py` (Included in this repo; requires `Python2.7` + `BioPython` library for Python2.7)
 - `Select_contigs.pl` (Included in this repo; requires `Perl`)
-- `Best_fit_domains.py` (Included in this repo; requires `Python3+` + `re` and `sys` modules)
+- `Best_fit_domains.py` (Included in this repo; requires `Python3.X` + `re` and `sys` modules)
 
-Each of these programs must be installed into `$PATH`
+Each of these programs are exported to `$PATH` by TIAMMAt.
 
 ---
 ### USAGE:
-It's recommended that for all path arguments, absolute paths be used. 
+It's recommended that for all path arguments, absolute paths be used.
 
 ```
 -d [directory]  Specify directory containing datasets [DEFAULT: pwd]
@@ -40,7 +39,7 @@ It's recommended that for all path arguments, absolute paths be used.
 ```
 
 **Example Command:**
-``` 
+```
 tiammat -d /path/to/Proteomes/ -m /path/to/Target_Pfams/ -p /path/to/Pfam-A.hmm -t 4
 ```
 
@@ -60,17 +59,19 @@ tiammat -d /path/to/Proteomes/ -m /path/to/Target_Pfams/ -p /path/to/Pfam-A.hmm 
 
 Currently, absolute paths for `-d`, `-m`, and `-p` are recommended. See *Known Issues* section below.
 
+For each domain of interest, the seed (an unaligned fasta file obtainable from the "**Alignments**" section for any domain in Pfam) and the model (raw HMM obtained from the "**Curation & model**" section for any given domain in Pfam) must be downloaded from the Pfam server (http://pfam.xfam.org/). Within the model directory (`-m`), the prefix naming convention must be identical for each domain (e.g., *PF00069_Pkinase*.fasta & *PF00069_Pkinase*.hmm). Additionally, ensure the domain models and the Pfam database input (`-p`) are the same version before running TIAMMAt.
+
 ### OUTPUTS:
-**Outputs the following:**
+**Output structure:**
 ```bash
 TIAMMAt_output_[WkDay]_[Month]_[Year]/ #Default output directory created by program
   1. IDENTIFICATION_STATISTICS.txt #TSV containing domain counts before & after revision
   2. SCRIPT_LOG.txt #Data log reporting operations and immediate results during program execution
-  
+
 TIAMMAt_output_[WkDay]_[Month]_[Year]/MODELS/ #Directory containing compressed models for initial HMMsearch step
   3. PF00069_Pkinase.hmm.h3* #Four files associated with initial Pkinase domain compression from HMMpress
   4. [Repeat (3) for Ubiquitin domain]
-  
+
 TIAMMAt_output_[WkDay]_[Month]_[Year]/Pkinase_PF00069/ #Output directory for Pkinase domain revision
   5. ProteomeA.hmmsearch_for_Pkinase.domtblout #HMMsearch domain table output for potential Pkinase domains in ProteomeA.fasta
   6. ProteomeA.hmmsearch.Pkinase_present.fasta #Fasta file containing sequences with potential Pkinase domains found in ProteomeA.fasta from HMMsearch
@@ -79,7 +80,7 @@ TIAMMAt_output_[WkDay]_[Month]_[Year]/Pkinase_PF00069/ #Output directory for Pki
   9. ProteomeA.Pkinase_present.hmmscan_against_pfam.Pkinase_coordinates.tsv #Coordinate TSV for all best-fit Pkinase domains in ProteomeA.fasta
   10. ProteomeA.Pkinase_present.hmmscan_against_pfam.target_list.txt #List of sequences with best-fit Pkinase domains in ProteomA.fasta
   11. [Repeat (5-10) for ProteomeB]
-  
+
 TIAMMAt_output_[WkDay]_[Month]_[Year]/Pkinase_PF00069/MODEL_REVISION/ #Directory used for Pkinase HMM profile revision; final revised domain model in TIAMMAt_output_[WkDay]_[Month]_[Year]/REVISED_MODELS/
   12. ProteomeA.Pkinase_regions_extracted.fasta #Pkinase domain sequences from ProteomeA.fasta
   13. [Repeat (12) for ProteomeB]
@@ -92,21 +93,21 @@ TIAMMAt_output_[WkDay]_[Month]_[Year]/Pkinase_PF00069/SECOND_SEARCH/ #Directory 
   18. Pfam_with_Pkinase_revisions.hmm.h3* #Four files associated with Pfam_with_Pkinase_revisions.hmm compression
   19. ProteomeA.hmmsearch_for_Pkinase_base_and_revised.domtblout #HMMsearch domain table output for potential Pkinase domains (either base or revised) in ProteomeA.fasta
   20. ProteomeA.hmmsearch.Pkinase_base_and_revised_present.fasta #Fasta file containing sequences with potential Pkinase domains (base or revised) found in ProteomeA.fasta from HMMsearch
-  21. ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.domtblout #HMMscan output (domain table) of above sequences annotated with all Pfam domains (including revised Pkinase domain). IMPORTANT: Sequences annotated in this file do not necessarily contain a best-hit target domain. 
+  21. ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.domtblout #HMMscan output (domain table) of above sequences annotated with all Pfam domains (including revised Pkinase domain). IMPORTANT: Sequences annotated in this file do not necessarily contain a best-hit target domain.
   22. ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.domtblout.besthits.tsv #Best-hits file associated with above file
   23. ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.target_list.txt #List of sequences with best-fit Pkinase domains (base or revised) in ProteomA.fasta
   24. ProteomeA.Pkinase.sequences_only_identified_after_revision.txt #Sequences in ProteomeA.fasta with Pkinase only found after revision
   25. [Repeat (19-24) for ProteomeB]
-  
+
 TIAMMAt_output_[WkDay]_[Month]_[Year]/Ubiquitin_PF00240/ #Output directory for Ubiquitin domain revision
   26. [Repeat (5-25) for Ubiquitin domain]
-  
+
 TIAMMAt_output_[WkDay]_[Month]_[Year]/REVISED_MODELS/ #Directory containing all revised models
   27. Pkinase_REVISION.hmm #Revised Pkinase domain HMM profile
   28. Pkinase_base_and_revision.hmm #Concatonation of base and revised Pkinase domain HMM profiles
   29. Pkinase_base_and_revision.hmm.h3* #Four files associated with Pkinase_base_and_revision.hmm compression
   30. [Repeat (27-29) for Ubiquitin domain]
-  
+
 TIAMMAt_output_[WkDay]_[Month]_[Year]/FINAL_HMMSCAN/ #Directory containing domain annotations following all domain revisions
   31. Pfam_with_all_revisions.hmm #Pfam database appanded with all revised domain profiles
   32. Pfam_with_all_revisions.hmm.h3* #Four files associated with Pfam_with_all_revisions.hmm compression
@@ -115,6 +116,7 @@ TIAMMAt_output_[WkDay]_[Month]_[Year]/FINAL_HMMSCAN/ #Directory containing domai
   35. ProteomeA.Pkinase_present_after_revision.hmmscan_vs_revised_Pfam.domtblout.besthits.tsv #Best-hits file associated with the above file
   36. [Repeat (33-35) for each ProteomeA+Ubiquitin, ProteomeB+Pkinase, and ProteomeB+Ubiquitin]
 ```
+
 Summary statistics in `IDENTIFICATION_STATISTICS.txt` is a useful metric for checking the results of TIAMMAt. For easy viewing, try `column -t IDENTIFICATION_STATISTICS.txt`.
 
 Users primarily interested in the revised model can find their revised models in the `REVISED_MODELS` directory, and those interested in the number of domain-containing proteins per dataset can find those data in both the `FINAL_HMMSCAN` directory.
@@ -127,6 +129,7 @@ To check input datasets, the top lines of `SCRIPT_LOG.txt` report the input file
 
 ---
 ### SUPPORT SCRIPTS:
+These programs must be manually executed - they are not run by TIAMMAt.
 
 **`Domain_svgwrite.py`:** Uses the `[name].besthits.tsv` input from TIAMMAt and generates a domain diagram object per annotated sequence into a single editable svg canvas.
 * *DEPENDENCIES:* `Python3+` + `re`, `sys`, `svgwrite`
@@ -138,5 +141,3 @@ To check input datasets, the top lines of `SCRIPT_LOG.txt` report the input file
 **`ID_novel_seqs.sh`:** Can be executed in the `SECOND_SEARCH` directory to rename headers to incorperate the revised domain and flag newly identified sequences with a 'NOV' tag.
 * *USAGE:* Execute command in `SECOND_SEARCH/` directory
 * *OUTPUT:* `[Taxon_ID].[Domain_ID]_base_and_revised_present.IDs_renamed.fasta`
-
-
