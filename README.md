@@ -27,6 +27,8 @@ The commands above are exported to `$PATH` from the git repository by TIAMMAt.
 
 - `HMMER` (Available at http://hmmer.org/; users should follow the installation instructions provided by HMMER prior to running TIAMMAt)
 
+TIAMMAt is compatible with `HMMER` versions 3.1 and 3.3.2
+
 ---
 ### USAGE:
 It's recommended that for all path arguments, absolute paths be used.
