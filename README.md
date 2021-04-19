@@ -23,7 +23,9 @@ In its current state, Pfam-A profile HMMs are derived of representative seed ali
 - `Select_contigs.pl` (Included in this repo; requires `Perl`)
 - `Best_fit_domains.py` (Included in this repo; requires `Python3.X` + `re` and `sys` modules)
 
-Each of these commands are exported to `$PATH` by TIAMMAt.
+The commands above are exported to `$PATH` from the git repository by TIAMMAt.
+
+- `HMMER` (Available at http://hmmer.org/; users should follow the installation instructions provided by HMMER prior to running TIAMMAt)
 
 ---
 ### USAGE:
