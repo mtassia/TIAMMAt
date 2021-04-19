@@ -107,14 +107,20 @@ TIAMMAt_output_[WkDay]_[Month]_[Year]/REVISED_MODELS/ #Directory containing all 
 TIAMMAt_output_[WkDay]_[Month]_[Year]/FINAL_HMMSCAN/ #Directory containing domain annotations following all domain revisions
   31. Pfam_with_all_revisions.hmm #Pfam database appanded with all revised domain profiles
   32. Pfam_with_all_revisions.hmm.h3* #Four files associated with Pfam_with_all_revisions.hmm compression
-  33. ProteomeA.Pkinase_present_after_revision.fasta #Sequences associated with ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.target_list.txt above
+  33. ProteomeA.Pkinase_present_after_revision.fasta #Sequences associated with ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.target_list.txt above -- i.e, sequences with best-hits to either base or revised domain
   34. ProteomeA.Pkinase_present_after_revision.hmmscan_vs_revised_Pfam.domtblout #HMMscan output (domain table) of above sequences annotated with all Pfam domains (including all revised domains)
   35. ProteomeA.Pkinase_present_after_revision.hmmscan_vs_revised_Pfam.domtblout.besthits.tsv #Best-hits file associated with the above file
   36. [Repeat (33-35) for each ProteomeA+Ubiquitin, ProteomeB+Pkinase, and ProteomeB+Ubiquitin]
 ```
+Summary statistics in `IDENTIFICATION_STATISTICS.txt` is a useful metric for checking the results of TIAMMAt. For easy viewing, try `column -t IDENTIFICATION_STATISTICS.txt`.
+
+Users primarily interested in the revised model can find their revised models in the `REVISED_MODELS` directory, and those interested in the number of domain-containing proteins per dataset can find those data in both the `FINAL_HMMSCAN` directory.
+
+To check input datasets, the top lines of `SCRIPT_LOG.txt` report the input files.
+
 ---
 ### KNOWN ISSUES:
-* `-d` argument cannot take current directory shortcut, `./` (i.e., `./[directory_name]` does not work; `-d` works with absolute path and assumes `pwd` as relative path (i.e., `[directory_name]` is `./[directory_name]`)
+* `-d` argument cannot take current directory shortcut, `./` (i.e., `./[directory_name]` does not work); `-d` works with absolute path and assumes `pwd` as relative path (i.e., `[directory_name]` is `./[directory_name]`)
 
 ---
 ### SUPPORT SCRIPTS:
