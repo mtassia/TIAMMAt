@@ -133,6 +133,11 @@ To check input, the top lines of `SCRIPT_LOG.txt` report the input files.
 * If base domain accession used for input does not match the accession present in Pfam (e.g., if TIR domain accession PF01582.22 is a target domain (`-m`), but not present in the local Pfam database (`-p`)), TIAMMAt will complete its run with no findings (even if homologous domains are present). See **INPUTS** section above.
 
 ---
+### UPCOMING CHANGES:
+* Conversion of `Pull_coordinates.py` from Python2.7 to Python3
+* Incorporating a compression loop into `tiammat` to tarball intermediate model revision directories to reduce final output size.
+
+---
 ### SUPPORT SCRIPTS:
 These programs must be manually executed - they are not run by TIAMMAt.
 
