@@ -144,6 +144,12 @@ if [[ ${PFAM_DB_PATH} == "NULL" ]]; then
 	ERROR=`echo "TRUE"`
 fi
 
+PFAM_DB_SUFFIX=`echo ${PFAM_DB_PATH} | awk -F"." '{print $NF}'`
+if [[ ${PFAM_DB_SUFFIX} != "hmm" ]]; then
+	printf "\nERROR: [-p] does not point to Pfam database file (Pfam-A.hmm).\n"
+	ERROR=`echo "TRUE"`
+fi
+
 if [[ ${PFAM_DIR} == "NULL" ]]; then
 	printf "\nERROR: Path to directory containing target pfam models and their associated seeds not provided [-m].\n"
 	ERROR=`echo "TRUE"`
