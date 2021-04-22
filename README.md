@@ -148,6 +148,6 @@ These programs must be manually executed - they are not run by TIAMMAt.
 
 ![Domain_diagram](https://github.com/mtassia/RelaxedDomainSearch/blob/master/Domain_SVGwrite_example.PNG)
 
-**`ID_novel_seqs.sh`:** Can be executed in the `SECOND_SEARCH` directory to rename headers to incorperate the revised domain and flag newly identified sequences with a 'NOV' tag.
+**`ID_novel_seqs.sh`:** Can be executed in the `SECOND_SEARCH` directory to rename headers to incorperate the revised domain and flag newly identified sequences with a 'NOV' tag *[!DEPRECATED!]*.
 * *USAGE:* Execute command in `SECOND_SEARCH/` directory
 * *OUTPUT:* `[Taxon_ID].[Domain_ID]_base_and_revised_present.IDs_renamed.fasta`
