@@ -20,7 +20,7 @@ In its current state, Pfam-A profile HMMs are derived of representative seed ali
 ---
 ### DEPENDENCIES:
 - `Pull_coordinates.py` (Included in this repo; requires `Python2.7` + `BioPython (version 1.76)` for Python2.7. BioPython can be installed using `pip install biopython==1.76`.
-- `Select_contigs.pl` (Included in this repo; requires `Perl`)
+- `Select_contigs.pl` (Written by J.D. White; Included in this repo; requires `Perl`)
 - `Best_fit_domains.py` (Included in this repo; requires `Python3.X` + `re` and `sys` modules)
 
 The commands above are exported to `$PATH` from the git repository by TIAMMAt.
