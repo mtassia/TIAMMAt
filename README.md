@@ -34,7 +34,7 @@ TIAMMAt is compatible with `HMMER` versions 3.1 and 3.3.2
 It's recommended that for all path arguments, absolute paths be used.
 
 ```
--d [directory]  Specify directory containing datasets [DEFAULT: pwd]
+-d [directory]  Specify directory containing protein datasets [DEFAULT: pwd]
 -h              Print help
 -m [directory]  Specify directory containing pfam models and seeds [MANDATORY; cannot be the same directory as datasets]
 -o [string]     Set name for output directory [default: TIAMMAt_output_{DATE}]
