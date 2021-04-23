@@ -134,8 +134,10 @@ To check input, the top lines of `SCRIPT_LOG.txt` report the input files.
 
 ---
 ### UPCOMING CHANGES:
-* Conversion of `Pull_coordinates.py` from Python2.7 to Python3
+* Conversion of `Pull_coordinates.py` from Python2.7 to Python3.
 * Incorporating a compression loop into `tiammat` to tarball intermediate model revision directories to reduce final output size.
+* Input QC testing for input amino acid file, not nucleotide.
+* Improvements to error reporting.
 
 ---
 ### SUPPORT SCRIPTS:
