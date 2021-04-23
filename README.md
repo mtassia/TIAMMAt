@@ -120,8 +120,15 @@ TIAMMAt_output_[WkDay]_[Month]_[Year]/FINAL_HMMSCAN/ #Directory containing domai
   35. ProteomeA.Pkinase_present_after_revision.hmmscan_vs_revised_Pfam.domtblout.besthits.tsv #Best-hits file associated with the above file
   36. [Repeat (33-35) for each ProteomeA+Ubiquitin, ProteomeB+Pkinase, and ProteomeB+Ubiquitin]
 ```
-
-Summary statistics in `IDENTIFICATION_STATISTICS.txt` are a useful metric for checking the results of TIAMMAt. For easy viewing, try `column -t IDENTIFICATION_STATISTICS.txt`.
+**Major Output Explanation:**
+Summary statistics in `IDENTIFICATION_STATISTICS.txt` are a useful metric for checking the results of TIAMMAt. For easy viewing, try `column -t IDENTIFICATION_STATISTICS.txt`. The column headers of `IDENTIFICATION_STATISTICS.txt` are as follows: 
+* 1 = Dataset ID 
+* 2 = Domain ID 
+* 3 = Number of sequences from pre-revision dataset with best-fit target domain
+* 4 = Number of domain occurances within column (3)
+* 5 = Number of sequences in post-revision dataset with best-fit target domain (base or revised)
+* 6 = Number of base domain occurances within column (5)
+* 7 = Number of revised domain occurances within column (6)
 
 Users primarily interested in the revised domain profile-HMMs can find their revised models in the `REVISED_MODELS` directory, and those interested in the number of domain-containing proteins per dataset can find those data in the `FINAL_HMMSCAN` directory.
 
