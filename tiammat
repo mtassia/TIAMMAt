@@ -115,7 +115,7 @@ while getopts ":o:d:m:p:t:h" opt; do
 			THREADS=`echo "${OPTARG}"`
 			;;
 		h) # Report help information
-			printf "\n\t-d [directory]\tSpecify directory containing datasets [DEFAULT: pwd]\n"
+			printf "\n\t-d [directory]\tSpecify directory containing protein datasets [DEFAULT: pwd]\n"
 			printf "\t-h\t\tPrint help\n"
 			printf "\t-m [directory]\tSpecify directory containing pfam models and seeds [MANDATORY; cannot be the same directory as datasets]\n"
 			printf "\t-o [string]\tSet name for output directory [default: TIAMMAt_output_{DATE}]\n"
