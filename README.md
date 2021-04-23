@@ -63,7 +63,11 @@ For each domain of interest, the seed (an unaligned fasta file obtainable from t
 - `[-o default]`
 - `-p /path/to/Pfam.hmm`
 
-Currently, absolute paths for `-d`, `-m`, and `-p` are recommended. See *Known Issues* section below.
+Absolute paths for `-d`, `-m`, and `-p` are recommended. 
+
+`tiammat` *should not* be run with nucleotide input - cannot currently detect the sequence alphabet of the input.
+
+See *Known Issues* section below.
 
 ### OUTPUTS:
 **Output structure:**
