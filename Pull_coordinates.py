@@ -2,7 +2,6 @@
 #Input1=Coordinate_file, #Input2=Fasta_file
 
 from Bio import SeqIO
-from Bio.Alphabet import IUPAC
 from Bio.Seq import Seq
 import sys
 
@@ -30,7 +29,7 @@ print NUM_COORD,'coordinates have been entered.\n'
 #For each sequence in fasta file, find matching coordinate data
 COUNT=0
 CUT_SEQ_RECORDS=[]
-for SEQUENCE in SeqIO.parse(sys.argv[2],'fasta',IUPAC.ambiguous_dna):
+for SEQUENCE in SeqIO.parse(sys.argv[2],'fasta'):
 	SEQ_NAME=SEQUENCE.id
 	for COORDINATE in COORDINATE_LIST:	#COORDINATE is a list of [NAME, START, STOP]
 		if COORDINATE[0] == SEQ_NAME:
