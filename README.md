@@ -19,13 +19,13 @@ In its current state, Pfam-A profile HMMs are derived of representative seed ali
 
 ---
 ### DEPENDENCIES:
-- `Pull_coordinates.py` (Included in this repo; requires `Python2.7` + `BioPython (version 1.76)` for Python2.7. BioPython can be installed using `pip install biopython==1.76`.
+- `Pull_coordinates.py` (Included in this repo; requires `Python3` + `BioPython`; `BioPython` can be installed with `pip install biopython`).
 - `Select_contigs.pl` (Written by J.D. White; Included in this repo; requires `Perl`)
-- `Best_fit_domains.py` (Included in this repo; requires `Python3.X` + `re` and `sys` modules)
+- `Best_fit_domains.py` (Included in this repo; requires `Python3` + `re` and `sys` modules)
 
 - `HMMER` (Available at http://hmmer.org/; users should follow the installation instructions provided by HMMER prior to running TIAMMAt)
 
-TIAMMAt is compatible with `HMMER` versions 3.1 and 3.3.2
+TIAMMAt has been tested and is compatible with `HMMER` versions 3.1 and 3.3.2
 
 ---
 ### USAGE:
@@ -143,7 +143,6 @@ To check input, the top lines of `SCRIPT_LOG.txt` report the input files.
 
 ---
 ### UPCOMING CHANGES:
-* Conversion of `Pull_coordinates.py` from Python2.7 to Python3.
 * Incorporating a compression loop into `tiammat` to tarball intermediate model revision directories to reduce final output size.
 * Input QC testing for input amino acid file, not nucleotide.
 * Improvements to error reporting.
