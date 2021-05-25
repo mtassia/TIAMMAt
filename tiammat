@@ -130,6 +130,16 @@ done
 
 ##########################
 
+# Add '/' to directory inputs if absent #########
+if [[ ${DATASET_DIR: -1} != "/" ]]; then
+        DATASET_DIR=`printf "${DATASET_DIR}/"`
+fi
+
+if [[ ${PFAM_DIR: -1} != "/" ]]; then
+        PFAM_DIR=`printf "${PFAM_DIR}/"`
+fi
+#################################################
+
 # INPUT CHECKS #
 ERROR=`echo "FALSE"`
 
@@ -144,8 +154,8 @@ if [[ ${PFAM_DB_SUFFIX} != "hmm" ]]; then
 	ERROR=`echo "TRUE"`
 fi
 
-if [[ ${PFAM_DIR} == "NULL" ]]; then
-	printf "\nERROR: Path to directory containing target pfam models and their associated seeds not provided [-m].\n"
+if [[ ! -d ${PFAM_DIR} ]]; then
+	printf "\nERROR: Directory containing target Pfam models and their seeds [-m] is missing, does not exist, or is not a directory.\n"
 	ERROR=`echo "TRUE"`
 fi
 
@@ -160,7 +170,7 @@ if [[ ${NUMBER_OF_FASTA} == "0" ]]; then
 	ERROR=`echo "TRUE"`
 fi
 
-if [[ ${PFAM_DIR} != "NULL" ]]; then
+if [[ -d ${PFAM_DIR} ]]; then
 	NUMBER_OF_MODELS=`ls $PFAM_DIR | grep 'hmm' | wc -l`
 	if [[ ${NUMBER_OF_MODELS} == "0" ]]; then
 		printf "\nERROR: Individual Pfam model directory [-m] does not contain any files with '.hmm' suffix.\n"
@@ -169,7 +179,7 @@ if [[ ${PFAM_DIR} != "NULL" ]]; then
 fi
 
 if [[ -d "${OUTPUT_DIR}" ]]; then
-        printf "\n\tERROR: Output directory exists. Please rename and try again.\n\t"
+        printf "\nERROR: Output directory exists. Please rename and try again.\n"
         ERROR=`echo "TRUE"`
 fi
 
@@ -201,10 +211,6 @@ mkdir ${OUTPUT_DIR} # Create output directories
 mkdir ${OUTPUT_DIR}/MODELS
 mkdir ${OUTPUT_DIR}/REVISED_MODELS
 mkdir ${OUTPUT_DIR}/FINAL_HMMSCAN
-
-if [[ ${DATASET_DIR: -1} != "/" ]]; then
-	DATASET_DIR=`printf "${DATASET_DIR}/"`
-fi
 
 # Initiate a script log file with useful information ####################
 echo "Output directory: $OUTPUT_DIR/" > ${OUTPUT_DIR}/SCRIPT_LOG.txt
