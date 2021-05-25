@@ -62,19 +62,14 @@ if ! [[ -x $BEST_FIT_DOMAINS ]]; then
         printf "\nERROR: Cannot find Best_fit_domains.py executable in \$PATH...\n"
 fi
 
-if ! type -p "python2.7" > /dev/null ; then
-        EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find python2.7 executable in \$PATH...\n"
-fi
-
-if ! python2.7 -c "import Bio" ; then
-	EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find BioPython package for Python2.7...\n"
-fi
-
 if ! type -p "python3" > /dev/null ; then
 	EXECUTABLE_ERROR=`echo "TRUE"`
 	printf "\nERROR: Cannot find python3 executable in \$PATH...\n"
+fi
+
+if ! python3 -c "import Bio" ; then
+        EXECUTABLE_ERROR=`echo "TRUE"`
+        printf "\nERROR: Cannot find BioPython package for Python3...\n"
 fi
 
 if [[ ${EXECUTABLE_ERROR} == "TRUE" ]]; then #If any program cannot be executed, exit
