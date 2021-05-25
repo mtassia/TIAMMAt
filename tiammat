@@ -149,14 +149,14 @@ if [[ ${PFAM_DIR} == "NULL" ]]; then
 	ERROR=`echo "TRUE"`
 fi
 
-if [[ ${DATASET_DIR: -1} != "/" ]]; then
-	printf "\nERROR: Dataset directory argument [-d] does not end with "/".\n"
+if [[ ! -d ${DATASET_DIR} ]]; then
+	printf "\nERROR: Dataset directory argument [-d] does not exist or is not a directory.\n"
 	ERROR=`echo "TRUE"`
 fi
 
 NUMBER_OF_FASTA=`ls ${DATASET_DIR} | grep 'fasta' | wc -l`
 if [[ ${NUMBER_OF_FASTA} == "0" ]]; then
-	printf "\nERROR: Database directory [-d] does not contain any files with '.fasta' suffix.\n"
+	printf "\nERROR: Dataset directory [-d] does not contain any files with '.fasta' suffix.\n\tIf [-d] not specified, then no fasta files were found in pwd.\n"
 	ERROR=`echo "TRUE"`
 fi
 
@@ -201,6 +201,10 @@ mkdir ${OUTPUT_DIR} # Create output directories
 mkdir ${OUTPUT_DIR}/MODELS
 mkdir ${OUTPUT_DIR}/REVISED_MODELS
 mkdir ${OUTPUT_DIR}/FINAL_HMMSCAN
+
+if [[ ${DATASET_DIR: -1} != "/" ]]; then
+	DATASET_DIR=`printf "${DATASET_DIR}/"`
+fi
 
 # Initiate a script log file with useful information ####################
 echo "Output directory: $OUTPUT_DIR/" > ${OUTPUT_DIR}/SCRIPT_LOG.txt
