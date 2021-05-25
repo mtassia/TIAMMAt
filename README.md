@@ -1,7 +1,7 @@
 # TIAMMAt: Taxon-Informed Adjustment of Markov-Model Attributes
 
 #### Revising domain profile HMMs using empirical datasets to capture sequence variation in non-model species and improve homologous sequence identification.
-
+#### TIAMMAt is currently under manuscript revision and is undergoing updates; please contact me for further detail if you would like to use the tool before publication.
 ---
 ### DESCRIPTION:
 _Preamble: This pipeline and it's application to immune-gene evolution is in prep for publication_
@@ -49,7 +49,7 @@ tiammat -d /path/to/Proteomes/ -m /path/to/Target_Pfams/ -p /path/to/Pfam-A.hmm 
 
 ---
 ### INPUTS:
-For each domain of interest, the seed (an unaligned fasta file obtainable from the "**Alignments**" section for any domain in Pfam) and the model (raw HMM obtained from the "**Curation & model**" section for any given domain in Pfam) must be downloaded from the Pfam server (http://pfam.xfam.org/). Within the model directory (`-m`), the prefix naming convention must be identical for each domain (e.g., *PF00069_Pkinase*.fasta & *PF00069_Pkinase*.hmm). Additionally, ensure the domain models and the Pfam database input (`-p`) are the same version before running TIAMMAt.
+For each domain of interest, the seed (an unaligned fasta file obtainable from the "**Alignments**" section for any domain in Pfam) and the model (raw HMM obtained from the "**Curation & model**" section for any given domain in Pfam) must be downloaded from the Pfam server (http://pfam.xfam.org/). Within the model directory (`-m`), the prefix naming convention must be identical for each domain (e.g., *PF00069_Pkinase*.fasta & *PF00069_Pkinase*.hmm). `Grab_models.sh` can be used to generate the files required in the model directory (see **Support Scripts** section below). Additionally, ensure the domain models and the Pfam database input (`-p`) are the same version before running TIAMMAt.
 
 **Example input structure:**
 - `-d /path/to/Proteomes/` contains:
@@ -63,7 +63,7 @@ For each domain of interest, the seed (an unaligned fasta file obtainable from t
 - `[-o default]`
 - `-p /path/to/Pfam.hmm`
 
-Absolute paths for `-d`, `-m`, and `-p` are recommended. 
+Absolute paths for `-d`, `-m`, and `-p` are recommended.
 
 `tiammat` *should not* be run with nucleotide input - cannot currently detect the sequence alphabet of the input.
 
@@ -125,9 +125,9 @@ TIAMMAt_output_[WkDay]_[Month]_[Year]/FINAL_HMMSCAN/ #Directory containing domai
   36. [Repeat (33-35) for each ProteomeA+Ubiquitin, ProteomeB+Pkinase, and ProteomeB+Ubiquitin]
 ```
 **Major Output Explanation:**
-Summary statistics in `IDENTIFICATION_STATISTICS.txt` are a useful metric for checking the results of TIAMMAt. For easy viewing, try `column -t IDENTIFICATION_STATISTICS.txt`. The column headers of `IDENTIFICATION_STATISTICS.txt` are as follows: 
-* 1 = Dataset ID 
-* 2 = Domain ID 
+Summary statistics in `IDENTIFICATION_STATISTICS.txt` are a useful metric for checking the results of TIAMMAt. For easy viewing, try `column -t IDENTIFICATION_STATISTICS.txt`. The column headers of `IDENTIFICATION_STATISTICS.txt` are as follows:
+* 1 = Dataset ID
+* 2 = Domain ID
 * 3 = Number of sequences from pre-revision dataset with best-fit target domain
 * 4 = Number of domain occurances within column (3)
 * 5 = Number of sequences in post-revision dataset with best-fit target domain (base or revised)
@@ -152,10 +152,10 @@ To check input, the top lines of `SCRIPT_LOG.txt` report the input files.
 
 ---
 ### SUPPORT SCRIPTS:
-These programs must be manually executed - they are not run by TIAMMAt.
+These programs must be manually executed - they are not run by TIAMMAt. Organized alphabetically below.
 
 **`Domain_svgwrite.py`:** Uses the `[name].besthits.tsv` input from TIAMMAt and generates a domain diagram object per annotated sequence into a single editable svg canvas.
-* *DEPENDENCIES:* `Python3+` + `re`, `sys`, `svgwrite`
+* *DEPENDENCIES:* `Python3`, `re`, `sys`, `svgwrite`
 * *USAGE:* `python3 Domain_svgwrite.py [name].besthit.tsv`
 * *OUTPUT:* `[name].besthits.tsv.domain_diagram.svg`
 
@@ -164,3 +164,44 @@ These programs must be manually executed - they are not run by TIAMMAt.
 **`ID_novel_seqs.sh`:** Can be executed in the `SECOND_SEARCH` directory to rename headers to incorperate the revised domain and flag newly identified sequences with a 'NOV' tag *[!DEPRECATED!]*.
 * *USAGE:* Execute command in `SECOND_SEARCH/` directory
 * *OUTPUT:* `[Taxon_ID].[Domain_ID]_base_and_revised_present.IDs_renamed.fasta`
+
+**`Grab_models.sh`:** Reads a list of pfam accessions and automatically downloads both the input `*.hmm` and seed fasta files into `pwd`. Automatically runs `Stockholm2fasta.py` below. This script is particularly useful when revising multiple Pfam models.
+* *DEPENDENCIES:* `Python3`, `BioPython` (both required for `Stockholm2fasta.py` which is run by `Grab_models.sh`)
+* *USAGE:* `Grab_models.sh [pfam_accession_list.txt]`
+* *INPUT FILE EXAMPLE:*
+```
+PF00554
+PF00605
+PF00619
+PF01582
+PF05729
+PF10401
+PF11648
+PF12721
+PF13676
+```
+* *OUTPUT:* `[Pfam_accession]_[Pfam_name].hmm` & `[Pfam_accession]_[Pfam_name].fasta` for every accession in `[pfam_accession_list.txt]`; example:
+```
+PF00554_RHD_DNA_bind.fasta
+PF00554_RHD_DNA_bind.hmm
+PF00605_IRF.fasta
+PF00605_IRF.hmm
+PF00619_CARD.fasta
+PF00619_CARD.hmm
+PF01582_TIR.fasta
+PF01582_TIR.hmm
+PF05729_NACHT.fasta
+PF05729_NACHT.hmm
+PF10401_IRF-3.fasta
+PF10401_IRF-3.hmm
+PF11648_RIG-I_C-RD.fasta
+PF11648_RIG-I_C-RD.hmm
+PF12721_RHIM.fasta
+PF12721_RHIM.hmm
+PF13676_TIR_2.fasta
+PF13676_TIR_2.hmm
+```
+
+**`Stockholm2fasta.py`:** Reads input stockholm alignment (in this case, the seed alignment downloaded from Pfam) and converts it to an unaligned fasta file. This can be used independently of `Grab_models.sh`
+* *DEPENDENCIES:* `Python3`, `BioPython`
+* *USAGE:* `Stockholm2fasta.py [input_stockholm] [output_fasta]`
