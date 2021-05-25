@@ -4,7 +4,6 @@
 
 # Add Git folder to path
 TIAMMAT_DIR=`echo $0 | sed 's/tiammat$//'`
-export PATH="$PATH:${TIAMMAT_DIR}"
 
 # HMMER command variables:
 HMMSEARCH=`which hmmsearch`
