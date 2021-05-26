@@ -81,7 +81,7 @@ fi
 
 # INITIALIZING VARIABLE DEFAULTS #
 
-OUTPUT_DIR=`date | awk '{print $2,$3,$(NF)}' | sed 's/ /_/g' | sed 's/^/TIAMMAt_output_/'`
+OUTPUT_DIR=`date '+%m_%d_%Y_%R' | sed 's/://' | sed 's/^/TIAMMAt_output_/'`
 DATASET_DIR=`pwd`
 PFAM_DIR=`echo "NULL"`
 PFAM_DB_PATH=`echo "NULL"`
