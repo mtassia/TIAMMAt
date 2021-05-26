@@ -13,6 +13,7 @@ HMMPRESS=`which hmmpress`
 HMMSCAN=`which hmmscan` 
 
 # Script command variables:
+TEST_FASTA=`echo ${TIAMMAT_DIR}Test_fasta.py`
 PULL_COORDINATES=`echo ${TIAMMAT_DIR}Pull_coordinates.py`
 SELECT_CONTIGS=`echo ${TIAMMAT_DIR}select_contigs.pl`
 BEST_FIT_DOMAINS=`echo ${TIAMMAT_DIR}Best_fit_domains.py`
@@ -24,52 +25,57 @@ EXECUTABLE_ERROR=`echo "FALSE"`
 
 if ! [[ -x $HMMSEARCH ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find hmmsearch executable in \$PATH...\n"
+        printf "\nERROR: Cannot find hmmsearch executable in \$PATH\n"
 fi
 
 if ! [[ -x $HMMALIGN ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find hmmalign executable in \$PATH...\n"
+        printf "\nERROR: Cannot find hmmalign executable in \$PATH\n"
 fi
 
 if ! [[ -x $HMMBUILD ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find hmmbuild executable in \$PATH...\n"
+        printf "\nERROR: Cannot find hmmbuild executable in \$PATH\n"
 fi
 
 if ! [[ -x $HMMPRESS ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find hmmpress executable in \$PATH...\n"
+        printf "\nERROR: Cannot find hmmpress executable in \$PATH\n"
 fi
 
 if ! [[ -x $HMMSCAN ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find hmmscan executable in \$PATH...\n"
+        printf "\nERROR: Cannot find hmmscan executable in \$PATH\n"
 fi
 
 if ! [[ -x $PULL_COORDINATES ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find Pull_coordinates.py executable in \$PATH...\n"
+        printf "\nERROR: Cannot find Pull_coordinates.py executable in $TIAMMAT_DIR\n"
 fi
 
 if ! [[ -x $SELECT_CONTIGS ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find select_contigs.pl executable in \$PATH...\n"
+        printf "\nERROR: Cannot find select_contigs.pl executable in $TIAMMAT_DIR\n"
 fi
 
 if ! [[ -x $BEST_FIT_DOMAINS ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find Best_fit_domains.py executable in \$PATH...\n"
+        printf "\nERROR: Cannot find Best_fit_domains.py executable in $TIAMMAT_DIR\n"
+fi
+
+if ! [[ -x $TEST_FASTA ]]; then
+	EXECUTABLE_ERROR=`echo "TRUE"`
+	printf "\nERROR: Cannot find Test_fasta.py executable in $TIAMMAT_DIR\n"
 fi
 
 if ! type -p "python3" > /dev/null ; then
 	EXECUTABLE_ERROR=`echo "TRUE"`
-	printf "\nERROR: Cannot find python3 executable in \$PATH...\n"
+	printf "\nERROR: Cannot find python3 executable in \$PATH\n"
 fi
 
 if ! python3 -c "import Bio" ; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find BioPython package for Python3...\n"
+        printf "\nERROR: Cannot find BioPython package for Python3\n"
 fi
 
 if [[ ${EXECUTABLE_ERROR} == "TRUE" ]]; then #If any program cannot be executed, exit
