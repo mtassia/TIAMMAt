@@ -19,13 +19,15 @@ In its current state, Pfam-A profile HMMs are derived of representative seed ali
 
 ---
 ### DEPENDENCIES:
-- `Pull_coordinates.py` (Included in this repo; requires `Python3` + `BioPython`; `BioPython` can be installed with `pip install biopython`).
+- `Pull_coordinates.py` (Included in this repo; requires `Python3` + `BioPython`).
 - `Select_contigs.pl` (Written by J.D. White; Included in this repo; requires `Perl`)
 - `Best_fit_domains.py` (Included in this repo; requires `Python3` + `re` and `sys` modules)
+- `Test_fasta.py` (Included in this repo; requires `Python3` + `BioPython`)
 
 - `HMMER` (Available at http://hmmer.org/; users should follow the installation instructions provided by HMMER prior to running TIAMMAt)
 
-TIAMMAt has been tested and is compatible with `HMMER` versions 3.1 and 3.3.2
+TIAMMAt has been tested and is compatible with `HMMER` versions 3.1 and 3.3.2  
+`BioPython` can be installed with `pip install biopython`
 
 ---
 ### USAGE:
@@ -61,8 +63,7 @@ For each domain of interest, the seed (an unaligned fasta file obtainable from t
 - `[-o default]`
 - `-p /path/to/Pfam.hmm`
 
-Absolute paths for `-d`, `-m`, and `-p` are recommended.
-
+Absolute paths for `-d`, `-m`, and `-p` are recommended.  
 `tiammat` *should not* be run with nucleotide input - cannot currently detect the sequence alphabet of the input.
 
 See *Known Issues* section below.
