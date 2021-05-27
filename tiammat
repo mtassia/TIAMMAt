@@ -186,12 +186,6 @@ if [[ ${#FASTA_FILES[@]} == "0" ]]; then
 	ERROR=`echo "TRUE"`
 fi
 
-#NUMBER_OF_FASTA=`ls ${DATASET_DIR} | grep 'fasta' | wc -l`
-#if [[ ${NUMBER_OF_FASTA} == "0" ]]; then
-#	printf "\nERROR: Dataset directory [-d] does not contain any files with '.fasta' suffix.\n\tIf [-d] not specified, then no fasta files were found in pwd.\n"
-#	ERROR=`echo "TRUE"`
-#fi
-
 if [[ -d ${PFAM_DIR} ]]; then
 	NUMBER_OF_MODELS=`ls $PFAM_DIR | grep 'hmm' | wc -l`
 	if [[ ${NUMBER_OF_MODELS} == "0" ]]; then
@@ -238,11 +232,6 @@ mkdir ${OUTPUT_DIR}/FINAL_HMMSCAN
 echo "Output directory: $OUTPUT_DIR/" > ${OUTPUT_DIR}/SCRIPT_LOG.txt
 echo "Dataset directory: $DATASET_DIR" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 printf "Datasets to be parsed:\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
-#for FILE in ${DATASET_DIR}*.fasta
-#        do
-#                printf "\t$FILE\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
-#        done
-
 for FASTA in ${FASTA_FILES[@]}
 do
 	printf "\t$FASTA\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
@@ -280,8 +269,10 @@ do
 	mv ${BASE_MODEL}.h* ${OUTPUT_DIR}/MODELS/ # Move model to output directory
 
 	printf ">\tIdentifying ${BASE_MODEL} domains among individual datasets...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
-	for FILE in ${DATASET_DIR}*.fasta # Search each dataset for the presence of target domain. At the end of each loop, domains will be identified and output to a directory which will be consolidated in the next loop to build a new domain model
-        do
+ 	
+	# Search each dataset for the presence of target domain. At the end of each loop, domains will be identified and output to a directory which will be consolidated in the next loop to build a new domain model
+	for FILE in ${FASTA_FILES[@]}
+	do
 		DATASET_ID=`echo "${FILE}" | awk -F"/" '{print $(NF)}' | awk -F"." '{print $1}'`
 		printf ">>\tSearching ${DATASET_ID}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 
@@ -367,8 +358,10 @@ do
 
 
 	printf ">\tRe-searching datasets for domain of interest...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
-	for FILE in ${DATASET_DIR}*.fasta # Search each dataset for the presence of target domain (revised and base).
-        do
+	
+	# Search each dataset for the presence of target domain (revised and base).
+	for FILE in ${FASTA_FILES[@]}
+	do
                 DATASET_ID=`echo "${FILE}" | awk -F"." '{print $1}' | awk -F"/" '{print $(NF)}'`
                 printf ">>\tRe-searching ${DATASET_ID}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 		

@@ -167,38 +167,38 @@ These programs must be manually executed - they are not run by TIAMMAt. Organize
 * *DEPENDENCIES:* `Python3`, `BioPython` (both required for `Stockholm2fasta.py` which is run by `Grab_models.sh`)
 * *USAGE:* `Grab_models.sh [pfam_accession_list.txt]`
 * *INPUT FILE EXAMPLE:*
-```
-PF00554
-PF00605
-PF00619
-PF01582
-PF05729
-PF10401
-PF11648
-PF12721
-PF13676
-```
+	```
+	PF00554
+	PF00605
+	PF00619
+	PF01582
+	PF05729
+	PF10401
+	PF11648
+	PF12721
+	PF13676
+	```
 * *OUTPUT:* `[Pfam_accession]_[Pfam_name].hmm` & `[Pfam_accession]_[Pfam_name].fasta` for every accession in `[pfam_accession_list.txt]`; example:
-```
-PF00554_RHD_DNA_bind.fasta
-PF00554_RHD_DNA_bind.hmm
-PF00605_IRF.fasta
-PF00605_IRF.hmm
-PF00619_CARD.fasta
-PF00619_CARD.hmm
-PF01582_TIR.fasta
-PF01582_TIR.hmm
-PF05729_NACHT.fasta
-PF05729_NACHT.hmm
-PF10401_IRF-3.fasta
-PF10401_IRF-3.hmm
-PF11648_RIG-I_C-RD.fasta
-PF11648_RIG-I_C-RD.hmm
-PF12721_RHIM.fasta
-PF12721_RHIM.hmm
-PF13676_TIR_2.fasta
-PF13676_TIR_2.hmm
-```
+	```
+	PF00554_RHD_DNA_bind.fasta
+	PF00554_RHD_DNA_bind.hmm
+	PF00605_IRF.fasta
+	PF00605_IRF.hmm
+	PF00619_CARD.fasta
+	PF00619_CARD.hmm
+	PF01582_TIR.fasta
+	PF01582_TIR.hmm
+	PF05729_NACHT.fasta
+	PF05729_NACHT.hmm
+	PF10401_IRF-3.fasta
+	PF10401_IRF-3.hmm
+	PF11648_RIG-I_C-RD.fasta
+	PF11648_RIG-I_C-RD.hmm
+	PF12721_RHIM.fasta
+	PF12721_RHIM.hmm
+	PF13676_TIR_2.fasta
+	PF13676_TIR_2.hmm
+	```
 
 **`Stockholm2fasta.py`:** Reads input stockholm alignment (in this case, the seed alignment downloaded from Pfam) and converts it to an unaligned fasta file. This can be used independently of `Grab_models.sh`
 * *DEPENDENCIES:* `Python3`, `BioPython`
