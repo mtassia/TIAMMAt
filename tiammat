@@ -170,11 +170,27 @@ if [[ ! -d ${DATASET_DIR} ]]; then
 	ERROR=`echo "TRUE"`
 fi
 
-NUMBER_OF_FASTA=`ls ${DATASET_DIR} | grep 'fasta' | wc -l`
-if [[ ${NUMBER_OF_FASTA} == "0" ]]; then
-	printf "\nERROR: Dataset directory [-d] does not contain any files with '.fasta' suffix.\n\tIf [-d] not specified, then no fasta files were found in pwd.\n"
+#If [-d] directory does not contain non-empty fasta-formatted files, return ERROR=TRUE
+FASTA_FILES=() #Initiate an array variable that will be filled with fasta files that exist in the DATASET_DIR, are not empty, and pass the Test_fasta.py check
+for FILE in ${DATASET_DIR}{*.fasta,*.fa,*.fna,*.faa,*.frn,*.fnn,*.fas,*.pep,*.cds}
+do
+	if [[ -s $FILE ]]; then #If file exists and is not empty
+		IS_FASTA=`$TEST_FASTA ${FILE}`
+		if [[ ${IS_FASTA} == "True" ]]; then
+			FASTA_FILES+=("${FILE}")
+		fi
+  	fi
+done
+if [[ ${#FASTA_FILES[@]} == "0" ]]; then
+	printf "\nERROR: Dataset directory [-d] does not contain any files in fasta format.\n\tIf [-d] not specified, then none were found in pwd.\n"
 	ERROR=`echo "TRUE"`
 fi
+
+#NUMBER_OF_FASTA=`ls ${DATASET_DIR} | grep 'fasta' | wc -l`
+#if [[ ${NUMBER_OF_FASTA} == "0" ]]; then
+#	printf "\nERROR: Dataset directory [-d] does not contain any files with '.fasta' suffix.\n\tIf [-d] not specified, then no fasta files were found in pwd.\n"
+#	ERROR=`echo "TRUE"`
+#fi
 
 if [[ -d ${PFAM_DIR} ]]; then
 	NUMBER_OF_MODELS=`ls $PFAM_DIR | grep 'hmm' | wc -l`
@@ -222,10 +238,16 @@ mkdir ${OUTPUT_DIR}/FINAL_HMMSCAN
 echo "Output directory: $OUTPUT_DIR/" > ${OUTPUT_DIR}/SCRIPT_LOG.txt
 echo "Dataset directory: $DATASET_DIR" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 printf "Datasets to be parsed:\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
-for FILE in ${DATASET_DIR}*.fasta
-        do
-                printf "\t$FILE\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
-        done
+#for FILE in ${DATASET_DIR}*.fasta
+#        do
+#                printf "\t$FILE\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+#        done
+
+for FASTA in ${FASTA_FILES[@]}
+do
+	printf "\t$FASTA\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+done
+
 printf "Pfam models to be improved:\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 for FILE in ${PFAM_DIR}*.hmm
         do
