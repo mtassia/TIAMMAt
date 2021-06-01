@@ -63,9 +63,7 @@ For each domain of interest, the seed (an unaligned fasta file obtainable from t
 - `[-o default]`
 - `-p /path/to/Pfam.hmm`
 
-Absolute paths for `-d`, `-m`, and `-p` are recommended.  
-`tiammat` *should not* be run with nucleotide input - cannot currently detect the sequence alphabet of the input.
-
+`tiammat` *should not* be run with nucleotide input - cannot currently detect the sequence alphabet of the input.  
 See *Known Issues* section below.
 
 ### OUTPUTS:
@@ -139,7 +137,7 @@ To check input, the top lines of `SCRIPT_LOG.txt` report the input files.
 
 ---
 ### KNOWN ISSUES:
-* `-d` argument cannot take current directory shortcut, `./` (i.e., `./[directory_name]` does not work); `-d` works with absolute path and assumes `pwd` as relative path (i.e., `[directory_name]` is `./[directory_name]`)
+
 * If base domain accession used for input does not match the accession present in Pfam (e.g., if TIR domain accession PF01582.22 is a target domain (`-m`), but not present in the local Pfam database (`-p`)), TIAMMAt will complete its run with no findings (even if homologous domains are present). See **INPUTS** section above.
 
 ---
