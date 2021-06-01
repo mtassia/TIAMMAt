@@ -136,7 +136,7 @@ done
 
 ##########################
 
-# Add '/' to directory inputs if absent #########
+# Format input directory strings for use ########
 if [[ ${DATASET_DIR: -1} != "/" ]]; then
         DATASET_DIR=`printf "${DATASET_DIR}/"`
 fi
@@ -330,7 +330,7 @@ do
 
 		printf "\nRunning [Pull_coordinates.py] on ${FILE}\n"
 		$PULL_COORDINATES ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.${MODEL_NAME}_coordinates.tsv $FILE # Pull domains from encompassing sequences
-		mv ${DATASET_DIR}/${DATASET_ID}.regions_extracted.fasta ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${DATASET_ID}.${MODEL_NAME}_regions_extracted.fasta
+		mv ${DATASET_DIR}${DATASET_ID}.regions_extracted.fasta ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${DATASET_ID}.${MODEL_NAME}_regions_extracted.fasta
 		NUMBER_EXTRACTED=`grep -c '>' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${DATASET_ID}.${MODEL_NAME}_regions_extracted.fasta`
 		printf ">>>\t${NUMBER_EXTRACTED} region(s) successfully extracted from ${DATASET_ID} which best-hit to ${MODEL_NAME}.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 	done
