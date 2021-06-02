@@ -316,10 +316,10 @@ do
 
 		NUMBER_OF_BESTHITS=`grep -c "$MODEL_ACCESSION" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout.besthits.tsv` #Count the number of best-hits to target domain; if there are none, skip the rest of the analysis for this dataset.
 		if [[ ${NUMBER_OF_BESTHITS} == "0" ]]; then
-                        printf ">>>\tNo best-hits found in ${DATASET_ID} for ${MODEL_NAME}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
-                        printf "${DATASET_ID}\t${MODEL_NAME}\t0\t0\n" >> ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt
+			printf ">>>\tNo best-hits found in ${DATASET_ID} for ${MODEL_NAME}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+			printf "${DATASET_ID}\t${MODEL_NAME}\t0\t0\n" >> ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt
 			continue
-                fi
+		fi
 		
 		grep "$MODEL_ACCESSION" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout.besthits.tsv | awk '{print $4, $20, $21}' > ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.${MODEL_NAME}_coordinates.tsv # Create a coordinate template indicating the regions of target domain; grep finds accession NOT Id - important for naming overlap
 		NUMBER_OF_COORDINATES=`wc -l ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.${MODEL_NAME}_coordinates.tsv | awk '{print $1}'`
@@ -376,37 +376,37 @@ do
 	# Search each dataset for the presence of target domain (revised and base).
 	for FILE in ${FASTA_FILES[@]}
 	do
-                DATASET_ID=`echo "${FILE}" | awk -F"." '{print $1}' | awk -F"/" '{print $(NF)}'`
-                printf ">>\tRe-searching ${DATASET_ID}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+		DATASET_ID=`echo "${FILE}" | awk -F"." '{print $1}' | awk -F"/" '{print $(NF)}'`
+		printf ">>\tRe-searching ${DATASET_ID}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 		
 		printf "\nRunning [hmmsearch] on ${DATASET_ID} after ${MODEL_NAME} revision\n" 
 		$HMMSEARCH --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}_base_and_revised.domtblout ${OUTPUT_DIR}/REVISED_MODELS/${MODEL_NAME}_base_and_revision.hmm ${FILE} 1>/dev/null		
 		
 		NUMBER_OF_HITS=`grep -vc '#' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}_base_and_revised.domtblout` # Count number of hits to target domain (base and revised)
-                if [[ ${NUMBER_OF_HITS} == "0" ]]; then
-                        printf ">>>\tNo matches found in ${DATASET_ID} for base or revised ${MODEL_NAME} that meet the inclusion threshold...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
-                        sed -i  "/${DATASET_ID}\t${MODEL_NAME}\t/s/$/\t0\t0\t0/" ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt
+		if [[ ${NUMBER_OF_HITS} == "0" ]]; then
+			printf ">>>\tNo matches found in ${DATASET_ID} for base or revised ${MODEL_NAME} that meet the inclusion threshold...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+			sed -i  "/${DATASET_ID}\t${MODEL_NAME}\t/s/$/\t0\t0\t0/" ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt
 			continue
-                fi	
+		fi	
 		
 		grep -v '#' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}_base_and_revised.domtblout | awk '{print $1}' | sort | uniq \
-                > ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.bait # Create bait file for select_contigs.pl
-                NUMBER_OF_HITS=`wc -l ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.bait | awk '{print $1}'`
-                printf ">>>\t${NUMBER_OF_HITS} sequence(s) in ${DATASET_ID} may possess base or revised ${MODEL_NAME}. Pulling sequences...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+			> ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.bait # Create bait file for select_contigs.pl
+		NUMBER_OF_HITS=`wc -l ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.bait | awk '{print $1}'`
+		printf ">>>\t${NUMBER_OF_HITS} sequence(s) in ${DATASET_ID} may possess base or revised ${MODEL_NAME}. Pulling sequences...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 
 		printf "\nRunning [select_contigs.pl] on ${DATASET_ID} after ${MODEL_NAME} revision\n"	
 		$SELECT_CONTIGS -n ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.bait ${FILE} ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch.${MODEL_NAME}_base_and_revised_present.fasta
-                rm ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.bait # Remove intermediate bait file
-                NUMBER_PULLED=`grep -c '>' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch.${MODEL_NAME}_base_and_revised_present.fasta`
-                printf ">>>\t${NUMBER_PULLED} sequence(s) pulled from ${DATASET_ID} which may possess base and/or revised ${MODEL_NAME}. Performing full animo acid domain annotation...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt		
+		rm ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.bait # Remove intermediate bait file
+		NUMBER_PULLED=`grep -c '>' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch.${MODEL_NAME}_base_and_revised_present.fasta`
+		printf ">>>\t${NUMBER_PULLED} sequence(s) pulled from ${DATASET_ID} which may possess base and/or revised ${MODEL_NAME}. Performing full animo acid domain annotation...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt		
 	
 		printf "\nRunning [hmmscan] on ${DATASET_ID} after ${MODEL_NAME} revision\n"
 		$HMMSCAN --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/Pfam_with_${MODEL_NAME}_revisions.hmm ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch.${MODEL_NAME}_base_and_revised_present.fasta 1>/dev/null #Perform hmmscan using pfam database with appended model revision
 		
 		printf "\nRunning [Best_fit_domains.py] on ${DATASET_ID} after ${MODEL_NAME} revision\n"
 		$BEST_FIT_DOMAINS ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout # Filter output for only the best domain architecture per query
-                NUMBER_ANNOTATED=`awk '{print $4}' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout.besthits.tsv | sort | uniq | wc -l`
-                printf ">>>\t${NUMBER_ANNOTATED} sequence(s) from ${DATASET_ID} annotated with pfam domains and filtered for best-fit architecture.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+		NUMBER_ANNOTATED=`awk '{print $4}' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout.besthits.tsv | sort | uniq | wc -l`
+		printf ">>>\t${NUMBER_ANNOTATED} sequence(s) from ${DATASET_ID} annotated with pfam domains and filtered for best-fit architecture.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 	
 		egrep "${MODEL_ACCESSION}|${MODEL_NAME}_REV" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout.besthits.tsv | awk '{print $4}' | sort | uniq > ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present_in_hmmscan_against_all_Pfam.txt #Create select_contigs bait
 		egrep "${MODEL_ACCESSION}|${MODEL_NAME}_REV" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout.besthits.tsv | awk '{print $4}' | sort | uniq > ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.target_list.txt # Create a list of sequence headers containing base or revised domain
@@ -418,10 +418,10 @@ do
 		NUMBER_OF_REVISED_MODEL=`grep -c "${MODEL_NAME}_REV" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout.besthits.tsv`
 	
 		if [[ ${NUMBER_OF_BEST_HITS} == "0" ]]; then # If there are no best-hits to revised or base domain model, skip the rest of the loop for this dataset
-                        printf ">>>\tNo best-hits found in ${DATASET_ID} for base or revised ${MODEL_NAME}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
-                        sed -i  "/${DATASET_ID}\t${MODEL_NAME}\t/s/$/\t0\t0\t0/" ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt
+			printf ">>>\tNo best-hits found in ${DATASET_ID} for base or revised ${MODEL_NAME}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+			sed -i  "/${DATASET_ID}\t${MODEL_NAME}\t/s/$/\t0\t0\t0/" ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt
 			continue
-                fi
+		fi
 		
 		printf ">>>\t${NUMBER_OF_BEST_HITS} sequence(s) from ${DATASET_ID} contain(s) a best-fit base or revised ${MODEL_NAME}.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 		printf ">>>\t${NUMBER_OF_NEW_SEQS} new sequence(s) possess target domain after model revision.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
