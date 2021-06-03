@@ -282,7 +282,7 @@ do
 	# Search each dataset for the presence of target domain. At the end of each loop, domains will be identified and output to a directory which will be consolidated in the next loop to build a new domain model
 	for FILE in ${FASTA_FILES[@]}
 	do
-		DATASET_ID=`echo "${FILE}" | awk -F"/" '{print $(NF)}' | awk -F"." '{print $1}'`
+		DATASET_ID=`echo "${FILE}" | awk -F"/" '{print $(NF)}' | sed 's/\.[^.]*$//'`
 		printf ">>\tSearching ${DATASET_ID}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 
 		printf "\nRunning [hmmsearch] on ${DATASET_ID}\n"
@@ -344,7 +344,7 @@ do
 	for FASTA in ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/*.fasta # Loop through fasta files of extracted domains and consolidate
 	do
 		NUMBER_EXTRACTED=`grep -c '>' $FASTA`
-		DATASET_NAME=`echo "${FASTA}" | awk -F"/" '{print $(NF)}' | awk -F"." '{print $1}'`
+		DATASET_NAME=`echo "${FASTA}" | awk -F"/" '{print $(NF)}' | sed 's/\.[^.]*$//'`
 		printf ">>>\tWriting ${NUMBER_EXTRACTED} ${MODEL_NAME} sequence(s) from ${DATASET_NAME} to ${MODEL_NAME}_from_all_datasets.fasta\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 		cat ${FASTA} >> ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${MODEL_NAME}_from_all_datasets.fasta
 		TOTAL_NUMBER=`grep -c '>' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${MODEL_NAME}_from_all_datasets.fasta`
@@ -380,7 +380,7 @@ do
 	# Search each dataset for the presence of target domain (revised and base).
 	for FILE in ${FASTA_FILES[@]}
 	do
-		DATASET_ID=`echo "${FILE}" | awk -F"." '{print $1}' | awk -F"/" '{print $(NF)}'`
+		DATASET_ID=`echo "${FILE}" | awk -F"/" '{print $(NF)}' | sed 's/\.[^.]*$//'`
 		printf ">>\tRe-searching ${DATASET_ID}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 		
 		printf "\nRunning [hmmsearch] on ${DATASET_ID} after ${MODEL_NAME} revision\n" 
@@ -444,7 +444,6 @@ do
 		
 		NUMBER_OF_SEQS=`grep -c '>' ${OUTPUT_DIR}/FINAL_HMMSCAN/${DATASET_ID}.${MODEL_NAME}_present_after_revision.fasta`
 		printf ">>>\t${NUMBER_OF_SEQS} sequence(s) written to ${DATASET_ID}.${MODEL_NAME}_present_after_revision.fasta which will be used for final hmmscan.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
-		
 	done
 done
 
@@ -476,7 +475,7 @@ fi
 printf ">\tBeginning annotation of sequences containing domains of interest.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 for FILE in ${OUTPUT_DIR}/FINAL_HMMSCAN/*.fasta
 do
-	DATASET_ID=`echo "${FILE}" | awk -F"/" '{print $(NF)}' | awk -F"." 'BEGIN{OFS = "."} {print $1, $2}'`
+	DATASET_ID=`echo "${FILE}" | awk -F"/" '{print $(NF)}' | sed 's/\.[^.]*$//'`
 	printf ">>\tProcessing ${DATASET_ID}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 	printf "\nRunning final [hmmscan] on ${DATASET_ID} after revisions\n"
 	$HMMSCAN --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/FINAL_HMMSCAN/${DATASET_ID}.hmmscan_vs_revised_Pfam.domtblout ${OUTPUT_DIR}/FINAL_HMMSCAN/Pfam_with_all_revisions.hmm ${FILE} 1>/dev/null # Final HMMscan
