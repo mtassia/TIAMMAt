@@ -4,6 +4,11 @@
 
 S2F=`echo "$0" | sed 's/Grab_models.sh$/Stockholm2Fasta.py/'`
 
+if [[ ! -s ${1} ]];then
+	echo "Input does cannot be found. Exiting..."
+	exit 0
+fi
+
 while read PFAM_ACCESSION
 do
 	echo "...Downloading ${PFAM_ACCESSION} profile HMM"

@@ -146,7 +146,7 @@ if [[ ${PFAM_DIR: -1} != "/" ]]; then
 fi
 
 if [[ ${OUTPUT_DIR: -1} == "/" ]]; then
-        OUTPUT_DIR=`${OUTPUT_DIR%?}`
+        OUTPUT_DIR=`printf "${OUTPUT_DIR%?}"`
 fi
 #################################################
 
