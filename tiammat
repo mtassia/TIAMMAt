@@ -136,13 +136,17 @@ done
 
 ##########################
 
-# Format input directory strings for use ########
+# Format directory strings for use ###############
 if [[ ${DATASET_DIR: -1} != "/" ]]; then
         DATASET_DIR=`printf "${DATASET_DIR}/"`
 fi
 
 if [[ ${PFAM_DIR: -1} != "/" ]]; then
         PFAM_DIR=`printf "${PFAM_DIR}/"`
+fi
+
+if [[ ${OUTPUT_DIR: -1} == "/" ]]; then
+        OUTPUT_DIR=`${OUTPUT_DIR%?}`
 fi
 #################################################
 
