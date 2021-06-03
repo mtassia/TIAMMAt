@@ -464,6 +464,15 @@ printf ">\tCompressing revised Pfam database...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.t
 printf "\nRunning [hmmpress] on Pfam database following revision of all target domains\n"
 $HMMPRESS ${OUTPUT_DIR}/FINAL_HMMSCAN/Pfam_with_all_revisions.hmm 
 
+NUM_FINAL_FASTA=`ls ${OUTPUT_DIR}/FINAL_HMMSCAN/*.fasta 2>/dev/null | wc -l`
+if [[ ${NUM_FINAL_FASTA} == "0" ]]; then
+	printf "\nBest-fit target domain(s) could not be found in any input dataset after revision. Exiting...\n" 
+	printf ">\tBest-fit target domain(s) could not be found in any input dataset after revision.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	printf "\nAnalysis complete.\n\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	printf "\nAnalysis complete\n"
+	exit 1
+fi
+
 printf ">\tBeginning annotation of sequences containing domains of interest.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 for FILE in ${OUTPUT_DIR}/FINAL_HMMSCAN/*.fasta
 do
