@@ -24,7 +24,7 @@ COORD_FILE.close()
 
 #Print a helpful message
 NUM_COORD=len(COORDINATE_LIST)
-print(NUM_COORD,'coordinates have been entered.\n')
+#print(NUM_COORD,'coordinates have been entered.\n')
 
 #For each sequence in fasta file, find matching coordinate data
 COUNT=0
@@ -33,7 +33,7 @@ for SEQUENCE in SeqIO.parse(sys.argv[2],'fasta'):
 	SEQ_NAME=SEQUENCE.id
 	for COORDINATE in COORDINATE_LIST:	#COORDINATE is a list of [NAME, START, STOP]
 		if COORDINATE[0] == SEQ_NAME:
-			print('Processing',SEQ_NAME)
+#			print('Processing',SEQ_NAME)
 			SEQUENCE.description=SEQ_NAME+"_sites_"+str(COORDINATE[1])+"-"+str(COORDINATE[2]) # This line and the following rename sequence id and description
 			SEQUENCE.id=SEQ_NAME+"_sites_"+str(COORDINATE[1])+"-"+str(COORDINATE[2])
 			if COORDINATE[1] > COORDINATE[2]:	#If coordinates refer to reverse sequence
@@ -49,9 +49,15 @@ for SEQUENCE in SeqIO.parse(sys.argv[2],'fasta'):
 				STOP=COORDINATE[2]
 				CUT_SEQ_RECORDS.append(SEQUENCE[START:STOP])
 			COUNT+=1
-print('Total number of sequences processed:',COUNT)
+#print('Total number of sequences processed:',COUNT)
 
 #Write output file
-FILE_ID=sys.argv[2].split(".")
-NEW_FILE_NAME=FILE_ID[0]+".regions_extracted.fasta"
-SeqIO.write(CUT_SEQ_RECORDS,NEW_FILE_NAME,"fasta")
+#FILE_ID=sys.argv[2].split(".")
+#NEW_FILE_NAME=FILE_ID[0]+".regions_extracted.fasta"
+#SeqIO.write(CUT_SEQ_RECORDS,NEW_FILE_NAME,"fasta")
+
+for RECORD in CUT_SEQ_RECORDS:
+	print(">"+RECORD.id)
+	print(RECORD.seq)
+
+

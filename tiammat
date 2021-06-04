@@ -333,8 +333,9 @@ do
 		printf "${DATASET_ID}\t${MODEL_NAME}\t${SEQS_WITH_BESTHITS}\t${NUMBER_OF_COORDINATES}\n" >> ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt #Output the number of unique sequences identified with target domain to a file for future comparison. VITAL NOTE: Not the number of occurances per sequence.
 
 		printf "\nRunning [Pull_coordinates.py] on ${DATASET_ID}\n"
-		$PULL_COORDINATES ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.${MODEL_NAME}_coordinates.tsv $FILE # Pull domains from encompassing sequences
-		mv ${DATASET_DIR}${DATASET_ID}.regions_extracted.fasta ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${DATASET_ID}.${MODEL_NAME}_regions_extracted.fasta
+		$PULL_COORDINATES ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.${MODEL_NAME}_coordinates.tsv $FILE \
+			> ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${DATASET_ID}.${MODEL_NAME}_regions_extracted.fasta # Pull domains from encompassing sequences
+#		mv ${DATASET_DIR}${DATASET_ID}.regions_extracted.fasta ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${DATASET_ID}.${MODEL_NAME}_regions_extracted.fasta
 		NUMBER_EXTRACTED=`grep -c '>' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/${DATASET_ID}.${MODEL_NAME}_regions_extracted.fasta`
 		printf ">>>\t${NUMBER_EXTRACTED} region(s) successfully extracted from ${DATASET_ID} which best-hit to ${MODEL_NAME}.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 	done
