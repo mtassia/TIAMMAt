@@ -42,9 +42,23 @@ It's recommended that for all path arguments, absolute paths be used.
 -t [integer]    Specify number of threads for hmmscan and hmmsearch
 ```
 
-**Example Command:**
+**Example Workflow:**
 ```
-tiammat -d /path/to/Proteomes/ -m /path/to/Target_Pfams/ -p /path/to/Pfam-A.hmm -t 4
+git clone https://github.com/mtassia/TIAMMAt.git
+mkdir Proteomes
+mkdir PfamModels
+wget http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz
+gzip -d Pfam-A.hmm.gz
+cd Proteomes/
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/003/605/GCF_000003605.2_Skow_1.1/GCF_000003605.2_Skow_1.1_protein.faa.gz
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/224/145/GCF_000224145.3_KH/GCF_000224145.3_KH_protein.faa.gz
+gzip -d *
+cd ..
+cd PfamModels/
+printf "PF01582\nPF05729\n" > Pfam_model_bait.txt
+../TIAMMAt/Support_scripts/Grab_models.sh Pfam_model_bait.txt
+cd ..
+TIAMMAt/tiammat -d Proteomes/ -m PfamModels/ -p Pfam-A.hmm
 ```
 
 ---
