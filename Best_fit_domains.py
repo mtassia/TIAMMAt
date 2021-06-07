@@ -116,7 +116,6 @@ for QUERY in ANNOTATION_LIST:
 
 #Write BEST_HIT_LINES to a file as a tsv
 FILE_OUTPUT=open((sys.argv[1]+".besthits.tsv"),'w')
-m
 
 for LINE in BEST_HIT_LINES:
 	FILE_OUTPUT.write('\t'.join(map(str,LINE))+"\n")
