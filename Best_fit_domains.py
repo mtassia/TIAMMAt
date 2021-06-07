@@ -2,12 +2,6 @@
 import re
 import sys
 
-#ATOM-SPECIFIC BLOCK FOR BUILDING CODE:
-#import os
-#print(os.getcwd())
-#DOMTBLOUT=open("Hsapiens_genome_proteins_RHIM_Pfam_model.Present.Pfam.domtblout", 'r') #VARIABLE INITIALIZED AS VARIABLE ON LINE 32 FOR FINAL VERSION
-#######################################
-
 #Function will convert indices corresponding to integers to integers and those corresponding to floats as floats
 def convert_domtblout_values(string_list):
 	string_list[2] = int(string_list[2])
@@ -72,18 +66,8 @@ for LINE in DOMTBLOUT:
 		ANNOTATION_LIST.append(DOMTBL_LINE) #After cleaning datalines, append to this variable. ANNOTATION_LIST will be a list-of-lists where each primary index is a line from the DOMTBLOUT
 DOMTBLOUT.close()
 
-#SANTIY CHECK FOR ATOM
-#for i in ANNOTATION_LIST:
-#	print(i)
-######################
-
 #Change ANNOTATION_LIST integer values from strings to integers
 ANNOTATION_LIST.sort(key = lambda x: (x[3], x[11])) #Sort list by the sequence accession, then by the conditional e-value. Later, any c-evalue >0.01 will be removed
-
-#SANTIY CHECK FOR ATOM
-#for i in ANNOTATION_LIST:
-#	print(i)
-######################
 
 BEST_HIT_LINES=[] #Create a new list that will contain only the best hits for each query
 PREVIOUS_QUERY=[] #Creates a list variable that will be used to compare lines as ANNOTATION_LIST is read
@@ -105,11 +89,6 @@ for QUERY in ANNOTATION_LIST:
 			if RESIDUE in QUERY_LENGTH_RANGE:
 				QUERY_LENGTH_RANGE.remove(RESIDUE)
 
-#SANITY CHECK##############################
-#		print(QUERY[3],QUERY_LENGTH_RANGE)
-#		print(QUERY[0],DOMAIN_RANGE)
-###########################################
-
 		PREVIOUS_QUERY=QUERY #Load current line into the PREVIOUS_QUERY variable for future comparison
 
 	else: # FOR EVERY NON-OVERLAPPING DOMAIN, REMOVE IT'S RANGE FROM THE RANGE OF THE CURRENT QUERY
@@ -126,11 +105,6 @@ for QUERY in ANNOTATION_LIST:
 			#print(QUERY[0], "encompasses a previous domain") #Line present for testing code in Atom
 			continue
 
-#SANITY CHECK##############################
-#		print(QUERY[3],QUERY_LENGTH_RANGE)
-#		print(QUERY[0],DOMAIN_RANGE)
-###########################################
-
 		#If domain does not overlap with a previously analyzed domain, then remove this region from the QUERY_LENGTH_RANGE and add line to BEST_HIT_LINES
 		else:
 			for RESIDUE in DOMAIN_RANGE:
@@ -139,16 +113,11 @@ for QUERY in ANNOTATION_LIST:
 			BEST_HIT_LINES.append(QUERY) #Add domain to BEST_HIT_LINES variable
 			PREVIOUS_QUERY=QUERY
 
-#SANITY CHECK##############################
-#		print(QUERY[3],QUERY_LENGTH_RANGE)
-#		print(QUERY[0],DOMAIN_RANGE)
-###########################################
 
 #Write BEST_HIT_LINES to a file as a tsv
 FILE_OUTPUT=open((sys.argv[1]+".besthits.tsv"),'w')
-#FILE_OUTPUT=open(("tmp_test_OLD"+".besthits.tsv"),'w') #Line present for testing code in Atom
+m
 
 for LINE in BEST_HIT_LINES:
-	#print('\t'.join(map(str,LINE))+"\n") #Line present for testing code in Atom
 	FILE_OUTPUT.write('\t'.join(map(str,LINE))+"\n")
 FILE_OUTPUT.close()
