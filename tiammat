@@ -279,6 +279,20 @@ for FILE in ${PFAM_DIR}*.hmm
                 printf "\t$FILE\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
         done
 echo "Pfam database path: $PFAM_DB_PATH" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+
+if [[ "${REP_THRESH}" == "DEFAULT" ]] && [[ "${INC_THRESH}" == "DEFAULT" ]]; then #Print default detection/inclusion thresholds to SCRIPT_LOG.txt
+	echo "hmmsearch/hmmscan per-target and per-domain e-value detection thresholds = 10.0" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	echo "hmmsearch/hmmscan per-target and per-domain e-value inclusion thresholds = 0.01" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+elif [[ "${REP_THRESH}" == "DEFAULT" ]] && [[ "${INC_THRESH}" != "DEFAULT" ]]; then #Print default detection and modified inclusion threshold to SCRIPT_LOG.txt
+	echo "hmmsearch/hmmscan per-target and per-domain e-value detection thresholds = 10.0" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	echo "hmmsearch/hmmscan per-target and per-domain e-value inclusion thresholds = ${INC_THRESH}" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+elif [[ "${REP_THRESH}" != "DEFAULT" ]] && [[ "${INC_THRESH}" == "DEFAULT" ]]; then #Print modified detection and default inclusion threshold to SCRIPT_LOG.txt
+	echo "hmmsearch/hmmscan per-target and per-domain e-value detection thresholds = ${REP_THRESH}" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	echo "hmmsearch/hmmscan per-target and per-domain e-value inclusion thresholds = 0.01" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+else #Print modified detection/inclusion thresholds to SCRIPT_LOG.txt
+	echo "hmmsearch/hmmscan per-target and per-domain e-value detection thresholds = ${REP_THRESH}" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	echo "hmmsearch/hmmscan per-target and per-domain e-value inclusion thresholds = ${INC_THRESH}" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+fi
 #########################################################################
 
 printf "\nRunning [hmmpress] on ${PFAM_DB_PATH}\n"
@@ -314,8 +328,19 @@ do
 		DATASET_ID=`echo "${FILE}" | awk -F"/" '{print $(NF)}' | sed 's/\.[^.]*$//'`
 		printf ">>\tSearching ${DATASET_ID}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 
-		printf "\nRunning [hmmsearch] on ${DATASET_ID}\n"
-		$HMMSEARCH --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}.domtblout ${OUTPUT_DIR}/MODELS/${MODEL_FILE_NAME} ${FILE} 1>/dev/null # Search for domain among datasets using HMMsearch and output in table format
+		printf "\nRunning [hmmsearch] on ${DATASET_ID}\n" #Changes to inclusion threshold do nothing here; hmmsearch is a filtering step where every sequence with a domain hit (below the reporting threshold) is annotated with hmmscan. The option will remain for reproducibility and QC
+		if [[ "${REP_THRESH}" != "DEFAULT" ]] && [[ "${INC_THRESH}" == "DEFAULT" ]]; then
+			$HMMSEARCH -E ${REP_THRESH} --domE ${REP_THRESH} --cpu ${THREADS} \
+				--domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}.domtblout ${OUTPUT_DIR}/MODELS/${MODEL_FILE_NAME} ${FILE} 1>/dev/null #Domain search with modified reporting threshold
+		elif [[ "${INC_THRESH}" != "DEFAULT" ]] && [[ "${REP_THRESH}" == "DEFAULT" ]]; then
+			$HMMSEARCH --incE ${INC_THRESH} --incdomE ${INC_THRESH} --cpu ${THREADS} \
+				--domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}.domtblout ${OUTPUT_DIR}/MODELS/${MODEL_FILE_NAME} ${FILE} 1>/dev/null #Domain search with modified inclusion threshold
+		elif [[ "${REP_THRESH}" != "DEFAULT" ]] && [[ "${INC_THRESH}" != "DEFAULT" ]]; then
+			$HMMSEARCH -E ${REP_THRESH} --domE ${REP_THRESH} --incE ${INC_THRESH} --incdomE ${INC_THRESH} --cpu ${THREADS} \
+				--domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}.domtblout ${OUTPUT_DIR}/MODELS/${MODEL_FILE_NAME} ${FILE} 1>/dev/null #Domain search with modified reporting and inclusion thresholds 
+		else
+			$HMMSEARCH --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}.domtblout ${OUTPUT_DIR}/MODELS/${MODEL_FILE_NAME} ${FILE} 1>/dev/null # Search for domain among datasets using HMMsearch and output in table format
+		fi
 
 		NUMBER_OF_HITS=`grep -vc '#' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}.domtblout` # Create a count variable for the following  loop that skips any dataset with no matches to target domain
 		if [[ ${NUMBER_OF_HITS} == "0" ]]; then
