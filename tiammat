@@ -365,10 +365,26 @@ do
 		fi		
 
 		printf "\nRunning [hmmscan] on ${DATASET_ID}\n"
-		$HMMSCAN --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout ${OUTPUT_DIR}/MODELS/${PFAM_DB_ID} ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch.${MODEL_NAME}_present.fasta 1>/dev/null # Annotate sequences which potential contain target domain with all Pfam accessions
+		if [[ "${REP_THRESH}" != "DEFAULT" ]] && [[ "${INC_THRESH}" == "DEFAULT" ]]; then
+			$HMMSCAN -E ${REP_THRESH} --domE ${REP_THRESH} --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout \
+				${OUTPUT_DIR}/MODELS/${PFAM_DB_ID} ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch.${MODEL_NAME}_present.fasta 1>/dev/null # Annotate sequences which potential contain target domain with all Pfam accessions; modified reporting threshold	
+		elif [[ "${INC_THRESH}" != "DEFAULT" ]] && [[ "${REP_THRESH}" == "DEFAULT" ]]; then
+			$HMMSCAN --incE ${INC_THRESH} --incdomE ${INC_THRESH} --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout \
+				${OUTPUT_DIR}/MODELS/${PFAM_DB_ID} ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch.${MODEL_NAME}_present.fasta 1>/dev/null # Annotate sequences which potential contain target domain with all Pfam accessions; modified inclusion threshold
+		elif [[ "${REP_THRESH}" != "DEFAULT" ]] && [[ "${INC_THRESH}" != "DEFAULT" ]]; then
+			$HMMSCAN -E ${REP_THRESH} --domE ${REP_THRESH} --incE ${INC_THRESH} --incdomE ${INC_THRESH} --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout \
+				${OUTPUT_DIR}/MODELS/${PFAM_DB_ID} ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch.${MODEL_NAME}_present.fasta 1>/dev/null # Annotate sequences which potential contain target domain with all Pfam accessions; modified inclusion & reporting threshold
+		else
+			$HMMSCAN --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout \
+				${OUTPUT_DIR}/MODELS/${PFAM_DB_ID} ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch.${MODEL_NAME}_present.fasta 1>/dev/null # Annotate sequences which potential contain target domain with all Pfam accessions; default inclusion and reporting thresholds	
+		fi
 		
 		printf "\nRunning [Best_fit_domains.py] on ${DATASET_ID}\n"
-		$BEST_FIT_DOMAINS ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout # Filter hmmscan output for only the best domain architecture per query
+		if [[ "${INC_THRESH}" != "DEFAULT" ]]; then
+			$BEST_FIT_DOMAINS ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout ${INC_THRESH} # Filter hmmscan output for only the best domain architectures per query using modified inclusion threshold 
+		else
+			$BEST_FIT_DOMAINS ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout # Filter hmmscan output for only the best domain architecture per query using default inclusion threshold
+		fi
 		NUMBER_ANNOTATED=`awk '{print $4}' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout.besthits.tsv | sort | uniq | wc -l`
 		printf ">>>\t${NUMBER_ANNOTATED} sequence(s) from ${DATASET_ID} annotated with pfam domains and filtered for best-fit architecture.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 

@@ -2,6 +2,11 @@
 import re
 import sys
 
+if len(sys.argv) == 2: #If no argument is passed to sys.argv[2], use default inclusion threshold filtering
+    INC_THRESH=0.01
+if len(sys.argv) == 3: #If integer argument is passed to sys.argv[2], use this value as the inclusion threshold
+    INC_THRESH=float(sys.argv[2])
+
 #Function will convert indices corresponding to integers to integers and those corresponding to floats as floats
 def convert_domtblout_values(string_list):
 	string_list[2] = int(string_list[2])
@@ -67,7 +72,7 @@ for LINE in DOMTBLOUT:
 DOMTBLOUT.close()
 
 #Change ANNOTATION_LIST integer values from strings to integers
-ANNOTATION_LIST.sort(key = lambda x: (x[3], x[11])) #Sort list by the sequence accession, then by the conditional e-value. Later, any c-evalue >0.01 will be removed
+ANNOTATION_LIST.sort(key = lambda x: (x[3], x[11])) #Sort list by the sequence accession, then by the conditional e-value. Later, any c-evalue >INC_THRESH will be removed
 
 BEST_HIT_LINES=[] #Create a new list that will contain only the best hits for each query
 PREVIOUS_QUERY=[] #Creates a list variable that will be used to compare lines as ANNOTATION_LIST is read
@@ -75,7 +80,7 @@ PREVIOUS_QUERY=[] #Creates a list variable that will be used to compare lines as
 #For-loop will loop through ANNOTATION, per line from DOMTBLOUT. Each loop will load a 22-field list object into QUERY
 for QUERY in ANNOTATION_LIST:
 
-	if (QUERY[6] > 0.01) or (QUERY[11] > 0.01) or (QUERY[12] > 0.01): #If per-sequence e-value > 0.01 or per-domain e-value > 0.01, inclusion threshold not met and line is skipped
+	if (QUERY[6] > INC_THRESH) or (QUERY[11] > INC_THRESH) or (QUERY[12] > INC_THRESH): #If per-sequence e-value > INC_THRESH or per-domain e-value > INC_THRESH, inclusion threshold not met and line is skipped
 		continue
 
 	#If reading first data line or reading a line describing a new sequence from the previous line, following block will build a range list according to the sequence's length to build best domain-architecture where no two domains can overlap (i.e., best-hit domains only kept per sequence)
