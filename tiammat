@@ -454,7 +454,19 @@ do
 		printf ">>\tRe-searching ${DATASET_ID}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 		
 		printf "\nRunning [hmmsearch] on ${DATASET_ID} after ${MODEL_NAME} revision\n" 
-		$HMMSEARCH --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}_base_and_revised.domtblout ${OUTPUT_DIR}/REVISED_MODELS/${MODEL_NAME}_base_and_revision.hmm ${FILE} 1>/dev/null		
+		if [[ "${REP_THRESH}" != "DEFAULT" ]] && [[ "${INC_THRESH}" == "DEFAULT" ]]; then
+			$HMMSEARCH -E ${REP_THRESH} --domE ${REP_THRESH} --cpu ${THREADS} \
+				--domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}_base_and_revised.domtblout ${OUTPUT_DIR}/REVISED_MODELS/${MODEL_NAME}_base_and_revision.hmm ${FILE} 1>/dev/null #Domain search with modified reporting threshold
+		elif [[ "${INC_THRESH}" != "DEFAULT" ]] && [[ "${REP_THRESH}" == "DEFAULT" ]]; then
+			$HMMSEARCH --incE ${INC_THRESH} --incdomE ${INC_THRESH} --cpu ${THREADS} \
+				--domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}_base_and_revised.domtblout ${OUTPUT_DIR}/REVISED_MODELS/${MODEL_NAME}_base_and_revision.hmm ${FILE} 1>/dev/null #Domain search with modified inclusion threshold
+		elif [[ "${REP_THRESH}" != "DEFAULT" ]] && [[ "${INC_THRESH}" != "DEFAULT" ]]; then
+			$HMMSEARCH -E ${REP_THRESH} --domE ${REP_THRESH} --incE ${INC_THRESH} --incdomE ${INC_THRESH} --cpu ${THREADS} \
+				--domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}_base_and_revised.domtblout ${OUTPUT_DIR}/REVISED_MODELS/${MODEL_NAME}_base_and_revision.hmm ${FILE} 1>/dev/null #Domain search with modified reporting and inclusion thresholds 
+		else
+			$HMMSEARCH --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}_base_and_revised.domtblout ${OUTPUT_DIR}/REVISED_MODELS/${MODEL_NAME}_base_and_revision.hmm ${FILE} 1>/dev/null # Search for domain among datasets using HMMsearch and output in table format
+		fi
+#		$HMMSEARCH --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}_base_and_revised.domtblout ${OUTPUT_DIR}/REVISED_MODELS/${MODEL_NAME}_base_and_revision.hmm ${FILE} 1>/dev/null		
 		
 		NUMBER_OF_HITS=`grep -vc '#' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}_base_and_revised.domtblout` # Count number of hits to target domain (base and revised)
 		if [[ ${NUMBER_OF_HITS} == "0" ]]; then
@@ -475,7 +487,20 @@ do
 		printf ">>>\t${NUMBER_PULLED} sequence(s) pulled from ${DATASET_ID} which may possess base and/or revised ${MODEL_NAME}. Performing full animo acid domain annotation...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt		
 	
 		printf "\nRunning [hmmscan] on ${DATASET_ID} after ${MODEL_NAME} revision\n"
-		$HMMSCAN --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/Pfam_with_${MODEL_NAME}_revisions.hmm ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch.${MODEL_NAME}_base_and_revised_present.fasta 1>/dev/null #Perform hmmscan using pfam database with appended model revision
+		if [[ "${REP_THRESH}" != "DEFAULT" ]] && [[ "${INC_THRESH}" == "DEFAULT" ]]; then
+			$HMMSCAN -E ${REP_THRESH} --domE ${REP_THRESH} --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout \
+				${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/Pfam_with_${MODEL_NAME}_revisions.hmm ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch.${MODEL_NAME}_base_and_revised_present.fasta 1>/dev/null #Perform hmmscan using pfam database with appended model revision and modified reporting threshold
+		elif [[ "${INC_THRESH}" != "DEFAULT" ]] && [[ "${REP_THRESH}" == "DEFAULT" ]]; then
+			$HMMSCAN --incE ${INC_THRESH} --incdomE ${INC_THRESH} --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout \
+				${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/Pfam_with_${MODEL_NAME}_revisions.hmm ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch.${MODEL_NAME}_base_and_revised_present.fasta 1>/dev/null #Perform hmmscan using pfam database with appended model revision and modified inclusion threshold
+		elif [[ "${REP_THRESH}" != "DEFAULT" ]] && [[ "${INC_THRESH}" != "DEFAULT" ]]; then
+			$HMMSCAN -E ${REP_THRESH} --domE ${REP_THRESH} --incE ${INC_THRESH} --incdomE ${INC_THRESH} --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout \
+				${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/Pfam_with_${MODEL_NAME}_revisions.hmm ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch.${MODEL_NAME}_base_and_revised_present.fasta 1>/dev/null #Perform hmmscan using pfam database with appended model revision and modified reporting/inclusion thresholds	
+		else
+			$HMMSCAN --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout \
+				${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/Pfam_with_${MODEL_NAME}_revisions.hmm ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch.${MODEL_NAME}_base_and_revised_present.fasta 1>/dev/null #Perform hmmscan using pfam database with appended model revision using default thresholds
+		fi
+#		$HMMSCAN --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/Pfam_with_${MODEL_NAME}_revisions.hmm ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch.${MODEL_NAME}_base_and_revised_present.fasta 1>/dev/null #Perform hmmscan using pfam database with appended model revision
 		
 		printf "\nRunning [Best_fit_domains.py] on ${DATASET_ID} after ${MODEL_NAME} revision\n"
 		$BEST_FIT_DOMAINS ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout # Filter output for only the best domain architecture per query
