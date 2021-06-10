@@ -6,7 +6,7 @@
 ### DESCRIPTION:
 _Preamble: This pipeline and it's application to immune-gene evolution is in prep for publication_
 
-In its current state, Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds appear to reflect a heavy biomedical species bias; and, as such, standard Pfam-A domain models appear to underestimate the number of homologuos domains within non-model species transcriptome/genome datasets. TIAMMAt aims to improve species/sequence diversity intrinsically captured within individual Pfam domain profile HMMs.
+In its current state, Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds appear to reflect a heavy biomedical species bias; and, as such, standard Pfam-A domain models appear to underestimate the number of homologuos domains within non-model species transcriptome/genome datasets. **TIAMMAt** (pronounced *TEE-a-mat* or *TEE-a-maht*) aims to improve species/sequence diversity intrinsically captured within individual Pfam domain profile HMMs.
 
 ##### The program is organized into three main blocks (detailed diagram can be seen below):
 1) Loop among amino acid datasets for best-hit motifs to the target domain(s)
@@ -36,9 +36,11 @@ It's recommended that for all path arguments, absolute paths be used.
 ```
 -d [directory]  Specify directory containing protein datasets [DEFAULT: pwd]
 -h              Print help
+-I [float]      Specify hmmscan/hmmsearch per-target and per-domain e-value inclusion thresholds (default: 0.01)
 -m [directory]  Specify directory containing pfam models and seeds [MANDATORY; cannot be the same directory as datasets]
--o [string]     Set name for output directory [default: TIAMMAt_output_{DATE}]
+-o [string]     Set name for output directory [default: TIAMMAt_output_{MONTH}_{DAY}_{YEAR}_{TIME}]
 -p [path]       Specify path to Pfam database [MANDATORY]
+-R [float]      Specify hmmscan/hmmsearch per-target and per-domain e-value reporting thresholds (default: 10.0)
 -t [integer]    Specify number of threads for hmmscan and hmmsearch
 ```
 
