@@ -118,10 +118,10 @@ while getopts ":o:d:m:p:t:I:R:h" opt; do
 			OUTPUT_DIR=`echo "${OPTARG}"`
 			;;
 		d) # Set dataset directory to something other than pwd
-			DATASET_DIR=`realpath "${OPTARG}"`
+			DATASET_DIR=`readlink -f "${OPTARG}"`
 			;;
 		m) # Set directory containing pfam models and seeds
-			PFAM_DIR=`realpath "${OPTARG}"`
+			PFAM_DIR=`readlink -f "${OPTARG}"`
 			;;
 		p) # Set path to Pfam database
 			PFAM_DB_PATH=`echo "${OPTARG}"`
