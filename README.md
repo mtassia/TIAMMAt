@@ -14,10 +14,6 @@ In its current state, Pfam-A profile HMMs are derived of representative seed ali
 3) Final scan among amino acid datasets for all Pfam-A entries included all revised domains
 
 ---
-### PIPELINE:
-![RelaxedDomainSearch Pipeline](https://github.com/mtassia/RelaxedDomainSearch/blob/master/Program_diagram.png)
-
----
 ### DEPENDENCIES:
 - `Pull_coordinates.py` (Included in this repo; requires `Python3` + `BioPython`).
 - `Select_contigs.pl` (Written by J.D. White; Included in this repo; requires `Perl`)
@@ -31,7 +27,7 @@ TIAMMAt has been tested and is compatible with `HMMER` versions 3.1 and 3.3.2
 
 ---
 ### USAGE:
-It's recommended that for all path arguments, absolute paths be used.
+It's recommended that for all path arguments absolute paths be used.
 
 ```
 -d [directory]  Specify directory containing protein datasets [DEFAULT: pwd]
@@ -76,7 +72,6 @@ For each domain of interest, the seed (an unaligned fasta file obtainable from t
   >- PF00069_Pkinase.hmm
   >- PF00240_Ubiquitin.fasta
   >- PF00240_Ubiquitin.hmm
-- `[-o default]`
 - `-p /path/to/Pfam.hmm`
 
 CAUTION: All fasta-formatted files within the `-d` dataset directory will be used for domain revision. As such, *do not* include fasta files within this directory which *are not* intended to be used for revision.  
@@ -215,3 +210,7 @@ These programs must be manually executed - they are not run by TIAMMAt. Organize
 **`Stockholm2fasta.py`:** Reads input stockholm alignment (in this case, the seed alignment downloaded from Pfam) and converts it to an unaligned fasta file. This can be used independently of `Grab_models.sh`
 * *DEPENDENCIES:* `Python3`, `BioPython`
 * *USAGE:* `Stockholm2fasta.py [input_stockholm] [output_fasta]`
+
+---
+### PIPELINE:
+![RelaxedDomainSearch Pipeline](https://github.com/mtassia/RelaxedDomainSearch/blob/master/Program_diagram.png)
