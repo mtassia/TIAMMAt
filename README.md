@@ -175,10 +175,6 @@ These programs must be manually executed - they are not run by TIAMMAt. Organize
 
 ![Domain_diagram](https://github.com/mtassia/RelaxedDomainSearch/blob/master/Domain_SVGwrite_example.PNG)
 
-**`ID_novel_seqs.sh`:** Can be executed in the `SECOND_SEARCH` directory to rename headers to incorperate the revised domain and flag newly identified sequences with a 'NOV' tag *[!DEPRECATED!]*.
-* *USAGE:* Execute command in `SECOND_SEARCH/` directory
-* *OUTPUT:* `[Taxon_ID].[Domain_ID]_base_and_revised_present.IDs_renamed.fasta`
-
 **`Grab_models.sh`:** Reads a list of pfam accessions and automatically downloads both the input `*.hmm` and seed fasta files into `pwd`. Automatically runs `Stockholm2fasta.py` below. This script is particularly useful when revising multiple Pfam models.
 * *DEPENDENCIES:* `Python3`, `BioPython` (both required for `Stockholm2fasta.py` which is run by `Grab_models.sh`)
 * *USAGE:* `Grab_models.sh [pfam_accession_list.txt]`
