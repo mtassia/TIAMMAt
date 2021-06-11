@@ -543,6 +543,11 @@ do
 		NUMBER_OF_SEQS=`grep -c '>' ${OUTPUT_DIR}/FINAL_HMMSCAN/${DATASET_ID}.${MODEL_NAME}_present_after_revision.fasta`
 		printf ">>>\t${NUMBER_OF_SEQS} sequence(s) written to ${DATASET_ID}.${MODEL_NAME}_present_after_revision.fasta which will be used for final hmmscan.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 	done
+	
+	printf "\nCompressing ${MODEL_NAME}_${MODEL_ACCESSION} revision directory.\n"
+	tar -czvf ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}.tar.gz ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION} #Create a compressed model directory to reduce disk usage by single TIAMMAt run
+	rm -rf ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION} #Remove uncompressed model directory
+
 done
 
 printf "Finished processing ${MODEL_FILE_NAME}.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
