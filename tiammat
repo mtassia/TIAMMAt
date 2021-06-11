@@ -314,13 +314,13 @@ do
 	mkdir ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION # Create a subdirectory where revised models will be built
 	cp ${PFAM_DIR}${MODEL_SEED_NAME} ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION/ # Copy model seed fasta to ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/MODEL_REVISION
 
-	printf "\nProcessing ${MODEL_FILE_NAME}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt # Print a helpful message to SCRIPT_LOG.txt
+	printf "\nProcessing ${MODEL_NAME}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt # Print a helpful message to SCRIPT_LOG.txt
 	
 	printf "\nRunning [hmmpress] on ${MODEL_NAME}\n"
 	$HMMPRESS ${BASE_MODEL} # Compress BASE_MODEL 
 	mv ${BASE_MODEL}.h* ${OUTPUT_DIR}/MODELS/ # Move model to output directory
 
-	printf ">\tIdentifying ${BASE_MODEL} domains among individual datasets...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+	printf ">\tIdentifying ${MODEL_NAME} domains among individual datasets...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
  	
 	# Search each dataset for the presence of target domain. At the end of each loop, domains will be identified and output to a directory which will be consolidated in the next loop to build a new domain model
 	for FILE in ${FASTA_FILES[@]}
@@ -344,7 +344,7 @@ do
 
 		NUMBER_OF_HITS=`grep -vc '#' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}.domtblout` # Create a count variable for the following  loop that skips any dataset with no matches to target domain
 		if [[ ${NUMBER_OF_HITS} == "0" ]]; then
-			printf ">>>\tNo matches found in ${DATASET_ID} for ${MODEL_NAME} that meet the inclusion threshold...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+			printf ">>>\tNo matches found in ${DATASET_ID} for ${MODEL_NAME} that meet the reporting threshold (${REP_THRESH})...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 			printf "${DATASET_ID}\t${MODEL_NAME}\t0\t0\n" >> ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt
 			continue
 		fi
@@ -390,7 +390,7 @@ do
 
 		NUMBER_OF_BESTHITS=`grep -c "$MODEL_ACCESSION" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.domtblout.besthits.tsv` #Count the number of best-hits to target domain; if there are none, skip the rest of the analysis for this dataset.
 		if [[ ${NUMBER_OF_BESTHITS} == "0" ]]; then
-			printf ">>>\tNo best-hits found in ${DATASET_ID} for ${MODEL_NAME}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+			printf ">>>\tNo best-hits found in ${DATASET_ID} for ${MODEL_NAME} which meet the inclusion threshold (${INC_THRESH})...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 			printf "${DATASET_ID}\t${MODEL_NAME}\t0\t0\n" >> ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt
 			continue
 		fi
@@ -469,7 +469,7 @@ do
 		
 		NUMBER_OF_HITS=`grep -vc '#' ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.hmmsearch_for_${MODEL_NAME}_base_and_revised.domtblout` # Count number of hits to target domain (base and revised)
 		if [[ ${NUMBER_OF_HITS} == "0" ]]; then
-			printf ">>>\tNo matches found in ${DATASET_ID} for base or revised ${MODEL_NAME} that meet the inclusion threshold...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+			printf ">>>\tNo matches found in ${DATASET_ID} for base or revised ${MODEL_NAME} that meet the reporting threshold (${REP_THRESH})...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 			sed -i  "/${DATASET_ID}\t${MODEL_NAME}\t/s/$/\t0\t0\t0/" ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt
 			continue
 		fi	
@@ -501,7 +501,6 @@ do
 		fi
 		
 		printf "\nRunning [Best_fit_domains.py] on ${DATASET_ID} after ${MODEL_NAME} revision\n"
-#		$BEST_FIT_DOMAINS ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout # Filter output for only the best domain architecture per query
 		if [[ "${INC_THRESH}" != "DEFAULT" ]]; then
 			$BEST_FIT_DOMAINS ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout ${INC_THRESH} # Filter output for only the best domain architecture per query using modified inclusion threshold 
 		else
@@ -518,7 +517,7 @@ do
 			comm -13 ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.target_list.txt ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.target_list.txt > ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}.sequences_only_identified_after_revision.txt #Create a file which contains the header for sequences found to have revised domain ONLY after revision
 			NUMBER_OF_NEW_SEQS=`wc -l ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}.sequences_only_identified_after_revision.txt | awk '{print $1}'`
 		elif [[ ! -s ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/${DATASET_ID}.${MODEL_NAME}_present.hmmscan_against_pfam.target_list.txt ]]; then #If domain was only found after revision
-			NUMBER_OF_NEW_SEQS=`wc -l ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.target_list.txt`
+			NUMBER_OF_NEW_SEQS=`wc -l ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.target_list.txt | awk '{print $1}'`
 		elif [[ ! -s ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.target_list.txt ]]; then #If the domain is no longer able to be found after revision
 			NUMBER_OF_NEW_SEQS=`echo "0"`
 		fi
@@ -528,7 +527,7 @@ do
 		NUMBER_OF_REVISED_MODEL=`grep -c "${MODEL_NAME}_REV" ${OUTPUT_DIR}/${MODEL_NAME}_${MODEL_ACCESSION}/SECOND_SEARCH/${DATASET_ID}.${MODEL_NAME}_base_and_revised_present.hmmscan_against_${MODEL_NAME}_REV_appended_Pfam.domtblout.besthits.tsv`
 	
 		if [[ ${NUMBER_OF_BEST_HITS} == "0" ]]; then # If there are no best-hits to revised or base domain model, skip the rest of the loop for this dataset
-			printf ">>>\tNo best-hits found in ${DATASET_ID} for base or revised ${MODEL_NAME}...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
+			printf ">>>\tNo best-hits found in ${DATASET_ID} for base or revised ${MODEL_NAME} which meet the inclusion threshold (${INC_THRESH})...\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 			sed -i  "/${DATASET_ID}\t${MODEL_NAME}\t/s/$/\t0\t0\t0/" ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt
 			continue
 		fi
@@ -590,7 +589,6 @@ do
 		$HMMSCAN --cpu ${THREADS} \
 			--domtblout ${OUTPUT_DIR}/FINAL_HMMSCAN/${DATASET_ID}.hmmscan_vs_revised_Pfam.domtblout ${OUTPUT_DIR}/FINAL_HMMSCAN/Pfam_with_all_revisions.hmm ${FILE} 1>/dev/null # Final HMMscan with default thresholds
 	fi
-#	$HMMSCAN --cpu ${THREADS} --domtblout ${OUTPUT_DIR}/FINAL_HMMSCAN/${DATASET_ID}.hmmscan_vs_revised_Pfam.domtblout ${OUTPUT_DIR}/FINAL_HMMSCAN/Pfam_with_all_revisions.hmm ${FILE} 1>/dev/null # Final HMMscan
 	
 	printf "\nRunning [Best_fit_domains.py] on ${DATASET_ID} to create final best-fit annotation report\n"
 	if [[ "${INC_THRESH}" != "DEFAULT" ]]; then
@@ -598,7 +596,6 @@ do
 	else
 		$BEST_FIT_DOMAINS ${OUTPUT_DIR}/FINAL_HMMSCAN/${DATASET_ID}.hmmscan_vs_revised_Pfam.domtblout # Pull only the best hit per region for final output using default inclusion threshold
 	fi
-#	$BEST_FIT_DOMAINS ${OUTPUT_DIR}/FINAL_HMMSCAN/${DATASET_ID}.hmmscan_vs_revised_Pfam.domtblout # Pull only the best hit per region for final output
 	
 	printf ">>\tFinished running HMMscan on ${DATASET_ID} and parsed best-hit domains.\n" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 done
