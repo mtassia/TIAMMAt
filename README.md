@@ -4,7 +4,7 @@
 ###### *TIAMMAt is currently under manuscript revision and is undergoing updates; please contact me for further detail if you would like to use the tool before publication.*
 ---
 ### DESCRIPTION:
-_**Preamble: TIAMMAt and it's application to immune-gene evolution is currently in the revision process for submission**_
+_**Preamble: TIAMMAt and its application to immune-gene evolution is currently in the revision process for submission**_
 
 In its current state, Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds reflect a dramatic biomedical species bias. As such, standard Pfam-A domain models appear to underestimate the number of homologous domains within non-model species transcriptome/genome datasets. **TIAMMAt** (pronounced *TEE-a-mat* or *TEE-a-maht*) aims to improve species/sequence diversity intrinsically represented within individual Pfam domain profile seed alignments.
 
@@ -15,11 +15,11 @@ In its current state, Pfam-A profile HMMs are derived of representative seed ali
 
 ---
 ### DEPENDENCIES:
-Included in this repositiory:
-- `Pull_coordinates.py` (Included in this repo; requires `Python3` + `BioPython`).
-- `Select_contigs.pl` (Written by J.D. White; Included in this repo; requires `Perl`)
-- `Best_fit_domains.py` (Included in this repo; requires `Python3` + `re` and `sys` modules)
-- `Test_fasta.py` (Included in this repo; requires `Python3` + `BioPython`)
+Included in this repository:
+- `Pull_coordinates.py` (requires `Python3` + `BioPython`).
+- `Select_contigs.pl` (Written by J.D. White; requires `Perl`)
+- `Best_fit_domains.py` (requires `Python3` + `re` and `sys` modules)
+- `Test_fasta.py` (requires `Python3` + `BioPython`)
 
 Required 3rd-party software:
 - `HMMER` (Available at http://hmmer.org/; users should follow the installation instructions provided by HMMER prior to running TIAMMAt)
