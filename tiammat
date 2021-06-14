@@ -7,7 +7,7 @@ if [[ "$#" == 0 ]]; then
 	printf "\t-I [float]\tSpecify hmmscan/hmmsearch per-target and per-domain e-value inclusion thresholds (default: 0.01)\n"
 	printf "\t-m [directory]\tSpecify directory containing pfam models and seeds [MANDATORY; cannot be the same directory as datasets]\n"
 	printf "\t-o [string]\tSet name for output directory [default: TIAMMAt_output_{MONTH}_{DAY}_{YEAR}_{TIME}]\n"
-	printf "\t-p [path]\tSpecify path to Pfam database [MANDATORY]\n"
+	printf "\t-p [path]\tSpecify path to uncompressed Pfam database [MANDATORY]\n"
 	printf "\t-R [float]\tSpecify hmmscan/hmmsearch per-target and per-domain e-value reporting thresholds (default: 10.0)\n"
 	printf "\t-t [integer]\tSpecify number of threads for hmmscan and hmmsearch\n\n"
 	exit 1
@@ -141,7 +141,7 @@ while getopts ":o:d:m:p:t:I:R:h" opt; do
 			printf "\t-I [float]\tSpecify hmmscan/hmmsearch per-target and per-domain e-value inclusion thresholds (default: 0.01)\n"
 			printf "\t-m [directory]\tSpecify directory containing pfam models and seeds [MANDATORY; cannot be the same directory as datasets]\n"
 			printf "\t-o [string]\tSet name for output directory [default: TIAMMAt_output_{MONTH}_{DAY}_{YEAR}_{TIME}]\n"
-			printf "\t-p [path]\tSpecify path to Pfam database [MANDATORY]\n"
+			printf "\t-p [path]\tSpecify path to uncompressed Pfam database [MANDATORY]\n"
 			printf "\t-R [float]\tSpecify hmmscan/hmmsearch per-target and per-domain e-value reporting thresholds (default: 10.0)\n"
 			printf "\t-t [integer]\tSpecify number of threads for hmmscan and hmmsearch\n\n"
 			exit 1
@@ -183,7 +183,7 @@ fi
 ERROR=`echo "FALSE"`
 
 if [[ ${PFAM_DB_PATH} == "NULL" ]]; then
-	printf "\nERROR: Path to Pfam database not provided [-p].\n"
+	printf "\nERROR: Path to uncompressed Pfam database not provided [-p].\n"
 	ERROR=`echo "TRUE"`
 fi
 
