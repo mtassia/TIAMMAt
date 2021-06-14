@@ -1,41 +1,45 @@
-# TIAMMAt: Taxon-Informed Adjustment of Markov-Model Attributes
+# TIAMMAt: *Taxon-Informed Adjustment of Markov-Model Attributes*
 
-#### Revising domain profile HMMs using empirical datasets to capture sequence variation in non-model species and improve homologous sequence identification.
-#### TIAMMAt is currently under manuscript revision and is undergoing updates; please contact me for further detail if you would like to use the tool before publication.
+#### TIAMMAt is a bioinformatic tool aimed at improving the representation of non-model species within Pfam domain profile HMMs.
+###### *TIAMMAt is currently under manuscript revision and is undergoing updates; please contact me for further detail if you would like to use the tool before publication.*
 ---
 ### DESCRIPTION:
-_Preamble: This pipeline and it's application to immune-gene evolution is in prep for publication_
+_**Preamble: TIAMMAt and it's application to immune-gene evolution is currently in the revision process for submission**_
 
-In its current state, Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds appear to reflect a heavy biomedical species bias; and, as such, standard Pfam-A domain models appear to underestimate the number of homologuos domains within non-model species transcriptome/genome datasets. **TIAMMAt** (pronounced *TEE-a-mat* or *TEE-a-maht*) aims to improve species/sequence diversity intrinsically captured within individual Pfam domain profile HMMs.
+In its current state, Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds reflect a dramatic biomedical species bias. As such, standard Pfam-A domain models appear to underestimate the number of homologous domains within non-model species transcriptome/genome datasets. **TIAMMAt** (pronounced *TEE-a-mat* or *TEE-a-maht*) aims to improve species/sequence diversity intrinsically represented within individual Pfam domain profile seed alignments.
 
 ##### The program is organized into three main blocks (detailed diagram can be seen below):
-1) Loop among amino acid datasets for best-hit motifs to the target domain(s)
-2) Loop through each domain profile HMM for revision to capture sequence variation of homologous domains within target datasets
-3) Final scan among amino acid datasets for all Pfam-A entries included all revised domains
+1) Loop among amino acid datasets searching for best-hit motifs to the target domain(s)  
+2) Loop through each domain profile HMM to revise for homologous sequence variation captured in (1)  
+3) Final scan of all amino acid datasets for Pfam-A entries including all revised domains
 
 ---
 ### DEPENDENCIES:
+Included in this repositiory:
 - `Pull_coordinates.py` (Included in this repo; requires `Python3` + `BioPython`).
 - `Select_contigs.pl` (Written by J.D. White; Included in this repo; requires `Perl`)
 - `Best_fit_domains.py` (Included in this repo; requires `Python3` + `re` and `sys` modules)
 - `Test_fasta.py` (Included in this repo; requires `Python3` + `BioPython`)
 
+Required 3rd-party software:
 - `HMMER` (Available at http://hmmer.org/; users should follow the installation instructions provided by HMMER prior to running TIAMMAt)
+- `BioPython` for `Python3` (can be installed with `pip install biopython`)
 
 TIAMMAt has been tested and is compatible with `HMMER` versions 3.1 and 3.3.2  
-`BioPython` can be installed with `pip install biopython`
+
 
 ---
 ### USAGE:
-It's recommended that for all path arguments absolute paths be used.
 
 ```
+> /path/to/tiammat [options] -m [directory] -p [/path/to/Pfam-A.hmm]
+
 -d [directory]  Specify directory containing protein datasets [DEFAULT: pwd]
 -h              Print help
 -I [float]      Specify hmmscan/hmmsearch per-target and per-domain e-value inclusion thresholds (default: 0.01)
 -m [directory]  Specify directory containing pfam models and seeds [MANDATORY; cannot be the same directory as datasets]
 -o [string]     Set name for output directory [default: TIAMMAt_output_{MONTH}_{DAY}_{YEAR}_{TIME}]
--p [path]       Specify path to Pfam database [MANDATORY]
+-p [path]       Specify path to uncompressed Pfam database [MANDATORY]
 -R [float]      Specify hmmscan/hmmsearch per-target and per-domain e-value reporting thresholds (default: 10.0)
 -t [integer]    Specify number of threads for hmmscan and hmmsearch
 ```
@@ -61,11 +65,13 @@ TIAMMAt/tiammat -d Proteomes/ -m PfamModels/ -p Pfam-A.hmm
 
 ---
 ### INPUTS:
-For each domain of interest, the seed (an unaligned fasta file obtainable from the "**Alignments**" section for any domain in Pfam) and the model (raw HMM obtained from the "**Curation & model**" section for any given domain in Pfam) must be downloaded from the Pfam server (http://pfam.xfam.org/). Within the model directory (`-m`), the prefix naming convention must be identical for each domain (e.g., *PF00069_Pkinase*.fasta & *PF00069_Pkinase*.hmm). `Grab_models.sh` can be used to generate the files required in the model directory (see **Support Scripts** section below). Additionally, ensure the domain models and the Pfam database input (`-p`) are the same version before running TIAMMAt.
+For each domain of interest, the seed (an unaligned fasta file obtainable from the "**Alignments**" section for any domain in Pfam) and the model (raw HMM obtained from the "**Curation & model**" section for any given domain in Pfam) must be downloaded from the Pfam server (http://pfam.xfam.org/). Within the model directory (`-m`), the prefix naming convention must be identical for each domain (e.g., *PF00069_Pkinase*.fasta & *PF00069_Pkinase*.hmm). Alternatively, `Grab_models.sh` (included in the *Support_scripts* directory of TIAMMAt) can be used to generate the files required in the model directory (see **Support Scripts** section below).
+
+Additionally, confirm the domain models and the Pfam database input (`-p`) are the same version before running TIAMMAt. This can be confirmed by searching for the domain accession(s) in the local uncompressed `Pfam-A.hmm` (e.g., via `grep`). Versioning differences between downloaded models and `Pfam-A.hmm` is often only a problem if you are working on an HPC with a pre-downloaded `Pfam-A.hmm` file.
 
 **Example input structure:**
 - `-d /path/to/Proteomes/` contains:
-  >- ProteomeA.fasta
+  >- ProteomeA.fa
   >- ProteomeB.fasta
 - `-m /path/to/Target_Pfams/` contains:
   >- PF00069_Pkinase.fasta
@@ -74,7 +80,7 @@ For each domain of interest, the seed (an unaligned fasta file obtainable from t
   >- PF00240_Ubiquitin.hmm
 - `-p /path/to/Pfam.hmm`
 
-CAUTION: All fasta-formatted files within the `-d` dataset directory will be used for domain revision. As such, *do not* include fasta files within this directory which *are not* intended to be used for revision.  
+CAUTION: All fasta-formatted files within the `-d` dataset directory will be used for domain revision. As such, _**do not**_ include fasta files within this directory which *are not* intended to be used for revision.  
 
 CAUTION: `tiammat` *should not* be run with nucleotide input - cannot currently detect the sequence alphabet of the input.  
 See *Known Issues* section below.
@@ -90,7 +96,7 @@ TIAMMAt_output_[WkDay]_[Month]_[Year]/MODELS/ #Directory containing compressed m
   3. PF00069_Pkinase.hmm.h3* #Four files associated with initial Pkinase domain compression from HMMpress
   4. [Repeat (3) for Ubiquitin domain]
 
-TIAMMAt_output_[WkDay]_[Month]_[Year]/Pkinase_PF00069/ #Output directory for Pkinase domain revision
+TIAMMAt_output_[WkDay]_[Month]_[Year]/Pkinase_PF00069 #Output directory for Pkinase domain revision (output as a tarball)
   5. ProteomeA.hmmsearch_for_Pkinase.domtblout #HMMsearch domain table output for potential Pkinase domains in ProteomeA.fasta
   6. ProteomeA.hmmsearch.Pkinase_present.fasta #Fasta file containing sequences with potential Pkinase domains found in ProteomeA.fasta from HMMsearch
   7. ProteomeA.Pkinase_present.hmmscan_against_pfam.domtblout #HMMscan output (domain table) of above sequences annotated with all Pfam domains
@@ -144,7 +150,7 @@ Summary statistics in `IDENTIFICATION_STATISTICS.txt` are a useful metric for ch
 * 6 = Number of base domain occurances within column (5)
 * 7 = Number of revised domain occurances within column (6)
 
-Users primarily interested in the revised domain profile-HMMs can find their revised models in the `REVISED_MODELS` directory, and those interested in the number of domain-containing proteins per dataset can find those data in the `FINAL_HMMSCAN` directory.
+Users primarily interested in the revised domain profile-HMMs can find their revised models in the `REVISED_MODELS` directory, and those interested in the domain-containing proteins per dataset can find those data in the `FINAL_HMMSCAN` directory.
 
 To check input, the top lines of `SCRIPT_LOG.txt` report the input files.
 
@@ -155,7 +161,6 @@ To check input, the top lines of `SCRIPT_LOG.txt` report the input files.
 
 ---
 ### UPCOMING CHANGES:
-* Incorporating a compression loop into `tiammat` to tarball intermediate model revision directories to reduce final output size.
 * Input QC testing for input amino acid file, not nucleotide.
 * Improvements to error reporting.
 
@@ -171,7 +176,7 @@ These programs must be manually executed - they are not run by TIAMMAt. Organize
 ![Domain_diagram](https://github.com/mtassia/RelaxedDomainSearch/blob/master/Domain_SVGwrite_example.PNG)
 
 **`Grab_models.sh`:** Reads a list of pfam accessions and automatically downloads both the input `*.hmm` and seed fasta files into `pwd`. Automatically runs `Stockholm2fasta.py` below. This script is particularly useful when revising multiple Pfam models.
-* *DEPENDENCIES:* `Python3`, `BioPython` (both required for `Stockholm2fasta.py` which is run by `Grab_models.sh`)
+* *DEPENDENCIES:* `Python3`, `BioPython` (both dependencies are required for `Stockholm2fasta.py` which is run by `Grab_models.sh`)
 * *USAGE:* `Grab_models.sh [pfam_accession_list.txt]`
 * *INPUT FILE EXAMPLE:*
 	```
