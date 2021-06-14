@@ -10,6 +10,7 @@ if [[ "$#" == 0 ]]; then
 	printf "\t-p [path]\tSpecify path to uncompressed Pfam database [MANDATORY]\n"
 	printf "\t-R [float]\tSpecify hmmscan/hmmsearch per-target and per-domain e-value reporting thresholds (default: 10.0)\n"
 	printf "\t-t [integer]\tSpecify number of threads for hmmscan and hmmsearch\n\n"
+	printf "Please refer to the README.md for further instruction.\n\n"
 	exit 1
 fi
 
@@ -144,6 +145,7 @@ while getopts ":o:d:m:p:t:I:R:h" opt; do
 			printf "\t-p [path]\tSpecify path to uncompressed Pfam database [MANDATORY]\n"
 			printf "\t-R [float]\tSpecify hmmscan/hmmsearch per-target and per-domain e-value reporting thresholds (default: 10.0)\n"
 			printf "\t-t [integer]\tSpecify number of threads for hmmscan and hmmsearch\n\n"
+			printf "Please refer to the README.md for further instruction.\n\n"
 			exit 1
 			;;
 		\?) # Error call if invalid flag provided
