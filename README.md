@@ -88,9 +88,11 @@ Additionally, confirm the domain models and the Pfam database input (`-p`) are t
 
 CAUTION: All fasta-formatted files within the `-d` dataset directory will be used for domain revision. **As such, *do not* include fasta files within this directory which *are not* intended to be used for revision.**  
 
-CAUTION: `tiammat` *should not* be run with nucleotide input - cannot currently detect the sequence alphabet of the input.  
+CAUTION: `tiammat` *should not* be run with nucleotide input - cannot currently detect the sequence alphabet of the input. 
+
 See *Known Issues* section below.
 
+---
 ### OUTPUTS:
 **Output structure:**
 ```bash
