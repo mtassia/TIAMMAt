@@ -8,9 +8,9 @@ _**Preamble: TIAMMAt and its application to immune-gene evolution is currently i
 
 In its current state, Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds reflect a dramatic biomedical species bias. As such, standard Pfam-A domain models appear to underestimate the number of homologous domains within non-model species transcriptome/genome datasets. **TIAMMAt** (pronounced *TEE-a-mat* or *TEE-a-maht*) aims to improve species/sequence diversity intrinsically represented within individual Pfam domain profile seed alignments.
 
-##### The program is organized into three main blocks (detailed diagram can be seen below):
-1) Loop among amino acid datasets searching for best-hit motifs to the target domain(s)  
-2) Loop through each domain profile HMM to revise for homologous sequence variation captured in (1)  
+##### The program is operationally organized into three main blocks (detailed diagram can be seen below):
+1) Search amino acid datasets for best-hit motifs to the target domain(s)  
+2) Revise each domain profile HMM to account for homologous sequence variation captured in (1)  
 3) Final scan of all amino acid datasets for Pfam-A entries including all revised domains
 
 ---
@@ -75,18 +75,18 @@ gzip -d Pfam-A.hmm.gz #Decompress
 
 Additionally, confirm the domain models and the Pfam database input (`-p`) are the same version before running TIAMMAt. This can be confirmed by searching for the domain accession(s) in the local uncompressed `Pfam-A.hmm` (e.g., via `grep`). Versioning differences between downloaded models and `Pfam-A.hmm` is often only a problem if you are working on an HPC with a pre-downloaded `Pfam-A.hmm` file.
 
-**Example input structure:**
+**Example input structure (from Example Workflow):**
 - `-d /path/to/Proteomes/` contains:
   >- ProteomeA.fa
   >- ProteomeB.fasta
-- `-m /path/to/Target_Pfams/` contains:
+- `-m /path/to/PfamModels/` contains:
   >- PF00069_Pkinase.fasta
   >- PF00069_Pkinase.hmm
   >- PF00240_Ubiquitin.fasta
   >- PF00240_Ubiquitin.hmm
 - `-p /path/to/Pfam.hmm`
 
-CAUTION: All fasta-formatted files within the `-d` dataset directory will be used for domain revision. As such, _**do not**_ include fasta files within this directory which *are not* intended to be used for revision.  
+CAUTION: All fasta-formatted files within the `-d` dataset directory will be used for domain revision. **As such, *do not* include fasta files within this directory which *are not* intended to be used for revision.**  
 
 CAUTION: `tiammat` *should not* be run with nucleotide input - cannot currently detect the sequence alphabet of the input.  
 See *Known Issues* section below.
