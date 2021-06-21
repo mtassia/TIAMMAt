@@ -189,9 +189,9 @@ if [[ ${PFAM_DB_PATH} == "NULL" ]]; then
 	ERROR=`echo "TRUE"`
 fi
 
-PFAM_DB_SUFFIX=`echo ${PFAM_DB_PATH} | awk -F"." '{print $NF}'`
-if [[ ${PFAM_DB_SUFFIX} != "hmm" ]]; then
-	printf "\nERROR: [-p] does not point to Pfam database file (Pfam-A.hmm).\n"
+PFAM_DB_FORMAT=`head -1 ${PFAM_DB_PATH} | awk '{print $1}' | awk -F"/" '{print $1}'`
+if [[ ${PFAM_DB_FORMAT} != "HMMER3" ]]; then
+	printf "\nERROR: [-p] does not point to a profile compatible with HMMER.\n\tPlease confirm Pfam database is decompressed and in HMMER's required profile format.\n"
 	ERROR=`echo "TRUE"`
 fi
 
@@ -301,6 +301,15 @@ printf "\nRunning [hmmpress] on ${PFAM_DB_PATH}\n"
 $HMMPRESS $PFAM_DB_PATH # Compress Pfam database
 mv ${PFAM_DB_PATH}.h* ${OUTPUT_DIR}/MODELS/ # Move compressed Pfam database to output directory
 PFAM_DB_ID=`echo ${PFAM_DB_PATH} | awk -F"/" '{print $(NF)}'`
+
+#Perform a check the pfam database was compressed and moved for working. If not, exit.
+if [[ ! -s ${OUTPUT_DIR}/MODELS/${PFAM_DB_ID}.h3m ]] || \
+	[[ ! -s ${OUTPUT_DIR}/MODELS/${PFAM_DB_ID}.h3i ]] || \
+	[[ ! -s ${OUTPUT_DIR}/MODELS/${PFAM_DB_ID}.h3f ]] || \
+	[[ ! -s ${OUTPUT_DIR}/MODELS/${PFAM_DB_ID}.h3p ]]; then
+		printf "\n Pfam database could not be compressed and moved into the TIAMMAt working directory.\nPlease confirm the Pfam path [-p] points at an uncompressed copy of the Pfam database."
+		exit 1
+fi 
 echo "Compressed Pfam database created at: ${OUTPUT_DIR}/MODELS/${PFAM_DB_ID}" >> ${OUTPUT_DIR}/SCRIPT_LOG.txt
 
 printf "#Dataset\tDomain\tInit_seqs_with_domain\tNum_domains_in_init\tRev_seqs_with_domain\tNum_base_domains_in_rev\tNum_rev_domains_in_rev\n" > ${OUTPUT_DIR}/IDENTIFICATION_STATISTICS.txt #File will contain information on the number of sequences with target domain before and after revision.
