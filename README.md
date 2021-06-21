@@ -119,32 +119,28 @@ TIAMMAt_output_[WkDay]_[Month]_[Year]/Pkinase_PF00069/MODEL_REVISION/ #Directory
   16. Pkinase_from_all_datasets.msa.trimmed.stockholm #Stockholm alignment of Pkinase domain with non-homologous ends trimmed
 
 TIAMMAt_output_[WkDay]_[Month]_[Year]/Pkinase_PF00069/SECOND_SEARCH/ #Directory contains search for Pkinase domains following revision
-  17. Pfam_with_Pkinase_revisions.hmm #Pfam database appended with revised domain profile
-  18. Pfam_with_Pkinase_revisions.hmm.h3* #Four files associated with Pfam_with_Pkinase_revisions.hmm compression
-  19. ProteomeA.hmmsearch_for_Pkinase_base_and_revised.domtblout #HMMsearch domain table output for potential Pkinase domains (either base or revised) in ProteomeA.fasta
-  20. ProteomeA.hmmsearch.Pkinase_base_and_revised_present.fasta #Fasta file containing sequences with potential Pkinase domains (base or revised) found in ProteomeA.fasta from HMMsearch
-  21. ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.domtblout #HMMscan output (domain table) of above sequences annotated with all Pfam domains (including revised Pkinase domain). IMPORTANT: Sequences annotated in this file do not necessarily contain a best-hit target domain.
-  22. ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.domtblout.besthits.tsv #Best-hits file associated with above file
-  23. ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.target_list.txt #List of sequences with best-fit Pkinase domains (base or revised) in ProteomA.fasta
-  24. ProteomeA.Pkinase.sequences_only_identified_after_revision.txt #Sequences in ProteomeA.fasta with Pkinase only found after revision
-  25. [Repeat (19-24) for ProteomeB]
+  17. ProteomeA.hmmsearch_for_Pkinase_base_and_revised.domtblout #HMMsearch domain table output for potential Pkinase domains (either base or revised) in ProteomeA.fasta
+  18. ProteomeA.hmmsearch.Pkinase_base_and_revised_present.fasta #Fasta file containing sequences with potential Pkinase domains (base or revised) found in ProteomeA.fasta from HMMsearch
+  19. ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.domtblout #HMMscan output (domain table) of above sequences annotated with all Pfam domains (including revised Pkinase domain). IMPORTANT: Sequences annotated in this file do not necessarily contain a best-hit target domain.
+  20. ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.domtblout.besthits.tsv #Best-hits file associated with above file
+  21. ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.target_list.txt #List of sequences with best-fit Pkinase domains (base or revised) in ProteomA.fasta
+  22. ProteomeA.Pkinase.sequences_only_identified_after_revision.txt #Sequences in ProteomeA.fasta with Pkinase only found after revision
+  23. [Repeat (19-24) for ProteomeB]
 
 TIAMMAt_output_[WkDay]_[Month]_[Year]/Ubiquitin_PF00240/ #Output directory for Ubiquitin domain revision
-  26. [Repeat (5-25) for Ubiquitin domain]
+  24. [Repeat (5-25) for Ubiquitin domain]
 
 TIAMMAt_output_[WkDay]_[Month]_[Year]/REVISED_MODELS/ #Directory containing all revised models
-  27. Pkinase_REVISION.hmm #Revised Pkinase domain HMM profile
-  28. Pkinase_base_and_revision.hmm #Concatonation of base and revised Pkinase domain HMM profiles
-  29. Pkinase_base_and_revision.hmm.h3* #Four files associated with Pkinase_base_and_revision.hmm compression
-  30. [Repeat (27-29) for Ubiquitin domain]
+  25. Pkinase_REVISION.hmm #Revised Pkinase domain HMM profile
+  26. Pkinase_base_and_revision.hmm #Concatonation of base and revised Pkinase domain HMM profiles
+  27. Pkinase_base_and_revision.hmm.h3* #Four files associated with Pkinase_base_and_revision.hmm compression
+  28. [Repeat (27-29) for Ubiquitin domain]
 
 TIAMMAt_output_[WkDay]_[Month]_[Year]/FINAL_HMMSCAN/ #Directory containing domain annotations following all domain revisions
-  31. Pfam_with_all_revisions.hmm #Pfam database appanded with all revised domain profiles
-  32. Pfam_with_all_revisions.hmm.h3* #Four files associated with Pfam_with_all_revisions.hmm compression
-  33. ProteomeA.Pkinase_present_after_revision.fasta #Sequences associated with ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.target_list.txt above -- i.e, sequences with best-hits to either base or revised domain
-  34. ProteomeA.Pkinase_present_after_revision.hmmscan_vs_revised_Pfam.domtblout #HMMscan output (domain table) of above sequences annotated with all Pfam domains (including all revised domains)
-  35. ProteomeA.Pkinase_present_after_revision.hmmscan_vs_revised_Pfam.domtblout.besthits.tsv #Best-hits file associated with the above file
-  36. [Repeat (33-35) for each ProteomeA+Ubiquitin, ProteomeB+Pkinase, and ProteomeB+Ubiquitin]
+  29. ProteomeA.Pkinase_present_after_revision.fasta #Sequences associated with ProteomeA.Pkinase_base_and_revised_present.hmmscan_against_Pkinase_REV_appended_Pfam.target_list.txt above -- i.e, sequences with best-hits to either base or revised domain
+  30. ProteomeA.Pkinase_present_after_revision.hmmscan_vs_revised_Pfam.domtblout #HMMscan output (domain table) of above sequences annotated with all Pfam domains (including all revised domains)
+  31. ProteomeA.Pkinase_present_after_revision.hmmscan_vs_revised_Pfam.domtblout.besthits.tsv #Best-hits file associated with the above file
+  32. [Repeat (33-35) for each ProteomeA+Ubiquitin, ProteomeB+Pkinase, and ProteomeB+Ubiquitin]
 ```
 **Major Output Explanation:**
 Summary statistics in `IDENTIFICATION_STATISTICS.txt` are a useful metric for checking the results of TIAMMAt. For easy viewing, try `column -t IDENTIFICATION_STATISTICS.txt`. The column headers of `IDENTIFICATION_STATISTICS.txt` are as follows:
