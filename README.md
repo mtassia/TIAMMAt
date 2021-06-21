@@ -46,26 +46,32 @@ TIAMMAt has been tested and is compatible with `HMMER` versions 3.1 and 3.3.2
 
 **Example Workflow:**
 ```
-git clone https://github.com/mtassia/TIAMMAt.git
-mkdir Proteomes
-mkdir PfamModels
+git clone https://github.com/mtassia/TIAMMAt.git 
+mkdir Proteomes 
+mkdir PfamModels 
 wget http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz
-gzip -d Pfam-A.hmm.gz
+gzip -d Pfam-A.hmm.gz #Decompress pfam database
 cd Proteomes/
-wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/003/605/GCF_000003605.2_Skow_1.1/GCF_000003605.2_Skow_1.1_protein.faa.gz
-wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/224/145/GCF_000224145.3_KH/GCF_000224145.3_KH_protein.faa.gz
-gzip -d *
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/003/605/GCF_000003605.2_Skow_1.1/GCF_000003605.2_Skow_1.1_protein.faa.gz #Download example proteome 1
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/224/145/GCF_000224145.3_KH/GCF_000224145.3_KH_protein.faa.gz #Download example proteome 2
+gzip -d * #Decompress downloaded proteoms
 cd ..
 cd PfamModels/
-printf "PF01582\nPF05729\n" > Pfam_model_bait.txt
-../TIAMMAt/Support_scripts/Grab_models.sh Pfam_model_bait.txt
+printf "PF01582\nPF05729\n" > Pfam_model_bait.txt #Create list of example Pfam domain IDs to be obtained using Grab_models.sh
+../TIAMMAt/Support_scripts/Grab_models.sh Pfam_model_bait.txt #Obtain & format domain profiles and unaligned seed alignments for tiammat
 cd ..
-TIAMMAt/tiammat -d Proteomes/ -m PfamModels/ -p Pfam-A.hmm
+TIAMMAt/tiammat -d Proteomes/ -m PfamModels/ -p Pfam-A.hmm 
 ```
 
 ---
 ### INPUTS:
 For each domain of interest, the seed (an unaligned fasta file obtainable from the "**Alignments**" section for any domain in Pfam) and the model (raw HMM obtained from the "**Curation & model**" section for any given domain in Pfam) must be downloaded from the Pfam server (http://pfam.xfam.org/). Within the model directory (`-m`), the prefix naming convention must be identical for each domain (e.g., *PF00069_Pkinase*.fasta & *PF00069_Pkinase*.hmm). Alternatively, `Grab_models.sh` (included in the *Support_scripts* directory of TIAMMAt) can be used to generate the files required in the model directory (see **Support Scripts** section below).
+
+The Pfam database can be acquired directly from the Pfam webserver (http://pfam.xfam.org/). Alternatively, the following commands can be executed in shell:
+```
+wget http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz #Download compressed pfam database
+gzip -d Pfam-A.hmm.gz #Decompress
+```
 
 Additionally, confirm the domain models and the Pfam database input (`-p`) are the same version before running TIAMMAt. This can be confirmed by searching for the domain accession(s) in the local uncompressed `Pfam-A.hmm` (e.g., via `grep`). Versioning differences between downloaded models and `Pfam-A.hmm` is often only a problem if you are working on an HPC with a pre-downloaded `Pfam-A.hmm` file.
 
