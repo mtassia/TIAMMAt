@@ -22,11 +22,8 @@ Included in this repository:
 - `Test_fasta.py` (requires `Python3` + `BioPython`)
 
 Required 3rd-party software:
-- `HMMER` (Available at http://hmmer.org/; users should follow the installation instructions provided by HMMER prior to running TIAMMAt)
+- `HMMER` version 3.1b2+ (Available at http://hmmer.org/; users should follow the installation instructions provided by HMMER prior to running TIAMMAt)
 - `BioPython` for `Python3` (can be installed with `pip install biopython`)
-
-TIAMMAt has been tested and is compatible with `HMMER` versions 3.1 and 3.3.2 (does not work with version h3.0)  
-
 
 ---
 ### USAGE:
