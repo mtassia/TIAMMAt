@@ -3,7 +3,7 @@
 #If no arguments are passed to tiammat, print help output
 if [[ "$#" == 0 ]]; then
 	printf "\n\t-d [directory]\tSpecify directory containing protein datasets [DEFAULT: pwd]\n"
-	printf "\t-h\t\tPrint help\n"
+	printf "\t-h\t\tPrint help (after testing dependencies)\n"
 	printf "\t-I [float]\tSpecify hmmscan/hmmsearch per-target and per-domain e-value inclusion thresholds (default: 0.01)\n"
 	printf "\t-m [directory]\tSpecify directory containing pfam models and seeds [MANDATORY; cannot be the same directory as datasets]\n"
 	printf "\t-o [string]\tSet name for output directory [default: TIAMMAt_output_{MONTH}_{DAY}_{YEAR}_{TIME}]\n"
@@ -20,11 +20,11 @@ fi
 TIAMMAT_DIR=`echo $0 | sed 's/tiammat$//'`
 
 # HMMER command variables:
-HMMSEARCH=`which hmmsearch`
-HMMALIGN=`which hmmalign`
-HMMBUILD=`which hmmbuild`
-HMMPRESS=`which hmmpress`
-HMMSCAN=`which hmmscan` 
+HMMSEARCH=`which hmmsearch 2>/dev/null`
+HMMALIGN=`which hmmalign 2>/dev/null`
+HMMBUILD=`which hmmbuild 2>/dev/null`
+HMMPRESS=`which hmmpress 2>/dev/null`
+HMMSCAN=`which hmmscan 2>/dev/null` 
 
 # Script command variables:
 TEST_FASTA=`echo ${TIAMMAT_DIR}Test_fasta.py`
@@ -39,58 +39,70 @@ EXECUTABLE_ERROR=`echo "FALSE"`
 
 if ! [[ -x $HMMSEARCH ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find hmmsearch executable in \$PATH\n"
+        printf "ERROR: Cannot find hmmsearch executable in \$PATH\n"
 fi
 
 if ! [[ -x $HMMALIGN ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find hmmalign executable in \$PATH\n"
+        printf "ERROR: Cannot find hmmalign executable in \$PATH\n"
 fi
 
 if ! [[ -x $HMMBUILD ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find hmmbuild executable in \$PATH\n"
+        printf "ERROR: Cannot find hmmbuild executable in \$PATH\n"
 fi
 
 if ! [[ -x $HMMPRESS ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find hmmpress executable in \$PATH\n"
+        printf "ERROR: Cannot find hmmpress executable in \$PATH\n"
 fi
 
 if ! [[ -x $HMMSCAN ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find hmmscan executable in \$PATH\n"
+        printf "ERROR: Cannot find hmmscan executable in \$PATH\n"
 fi
 
 if ! [[ -x $PULL_COORDINATES ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find Pull_coordinates.py executable in $TIAMMAT_DIR\n"
+        printf "ERROR: Cannot find Pull_coordinates.py executable in $TIAMMAT_DIR\n"
 fi
 
 if ! [[ -x $SELECT_CONTIGS ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find select_contigs.pl executable in $TIAMMAT_DIR\n"
+        printf "ERROR: Cannot find select_contigs.pl executable in $TIAMMAT_DIR\n"
 fi
 
 if ! [[ -x $BEST_FIT_DOMAINS ]]; then
         EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find Best_fit_domains.py executable in $TIAMMAT_DIR\n"
+        printf "ERROR: Cannot find Best_fit_domains.py executable in $TIAMMAT_DIR\n"
 fi
 
 if ! [[ -x $TEST_FASTA ]]; then
 	EXECUTABLE_ERROR=`echo "TRUE"`
-	printf "\nERROR: Cannot find Test_fasta.py executable in $TIAMMAT_DIR\n"
+	printf "ERROR: Cannot find Test_fasta.py executable in $TIAMMAT_DIR\n"
 fi
 
-if ! type -p "python3" > /dev/null ; then
+PYTHON_VER=`python3 -c 'import sys; print(sys.version_info[0])' 2>/dev/null`
+if [[ "${PYTHON_VER}" != 3 ]] 2>/dev/null; then
 	EXECUTABLE_ERROR=`echo "TRUE"`
-	printf "\nERROR: Cannot find python3 executable in \$PATH\n"
+	printf "ERROR: Cannot find python3 executable in \$PATH\n"
 fi
 
-if ! python3 -c "import Bio" ; then
-        EXECUTABLE_ERROR=`echo "TRUE"`
-        printf "\nERROR: Cannot find BioPython package for Python3\n"
+#if ! type -p "python3" > /dev/null ; then
+#	EXECUTABLE_ERROR=`echo "TRUE"`
+#	printf "ERROR: Cannot find python3 executable in \$PATH\n"
+#fi
+
+BIOPYTHON_CHECK=`python3 -c 'import pkgutil; print(1 if pkgutil.find_loader("Bio") else 0)' 2>/dev/null`
+if [[ "${BIOPYTHON_CHECK}" != 1 ]]; then
+	EXECUTABLE_ERROR=`echo "TRUE"`
+	printf "ERROR: Cannot find BioPython package for Python3\n"
 fi
+
+#if ! python3 -c "import Bio" ; then
+#        EXECUTABLE_ERROR=`echo "TRUE"`
+#        printf "ERROR: Cannot find BioPython package for Python3\n"
+#fi
 
 if [[ ${EXECUTABLE_ERROR} == "TRUE" ]]; then #If any program cannot be executed, exit
         printf "Exiting...\n"
@@ -138,7 +150,7 @@ while getopts ":o:d:m:p:t:I:R:h" opt; do
 			;;			
 		h) # Report help information
 			printf "\n\t-d [directory]\tSpecify directory containing protein datasets [DEFAULT: pwd]\n"
-			printf "\t-h\t\tPrint help\n"
+			printf "\t-h\t\tPrint help (after testing dependencies)\n"
 			printf "\t-I [float]\tSpecify hmmscan/hmmsearch per-target and per-domain e-value inclusion thresholds (default: 0.01)\n"
 			printf "\t-m [directory]\tSpecify directory containing pfam models and seeds [MANDATORY; cannot be the same directory as datasets]\n"
 			printf "\t-o [string]\tSet name for output directory [default: TIAMMAt_output_{MONTH}_{DAY}_{YEAR}_{TIME}]\n"
