@@ -70,7 +70,7 @@ wget http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz #Down
 gzip -d Pfam-A.hmm.gz #Decompress
 ```
 
-Additionally, confirm the domain models and the Pfam database input (`-p`) are the same version before running TIAMMAt. This can be confirmed by searching for the domain accession(s) in the local uncompressed `Pfam-A.hmm` (e.g., via `grep`). Versioning differences between downloaded models and `Pfam-A.hmm` is often only a problem if you are working on an HPC with a pre-downloaded `Pfam-A.hmm` file.
+Additionally, confirm the domain models and the Pfam database input (`-p`) are the same version before running TIAMMAt. This can be confirmed by searching for the domain accession(s) in the local uncompressed `Pfam-A.hmm` (e.g., via `grep`). `tiammat` will report an error and exit if versions differ between individual domain profiles and the entry within the local Pfam DB.
 
 **Example input structure (from Example Workflow):**
 - `-d /path/to/Proteomes/` contains:
