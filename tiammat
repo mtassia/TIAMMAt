@@ -195,25 +195,26 @@ fi
 
 # INPUT CHECKS #
 ERROR=`echo "FALSE"`
+printf "Checking inputs..."
 
 if [[ ${PFAM_DB_PATH} == "NULL" ]]; then
-	printf "\nERROR: Path to uncompressed Pfam database not provided [-p].\n"
+	printf "\nERROR: Path to uncompressed Pfam database not provided [-p]."
 	ERROR=`echo "TRUE"`
 fi
 
 PFAM_DB_FORMAT=`head -1 ${PFAM_DB_PATH} | awk '{print $1}' | awk -F"/" '{print $1}'`
 if [[ ${PFAM_DB_FORMAT} != "HMMER3" ]]; then
-	printf "\nERROR: [-p] does not point to a profile compatible with HMMER.\n\tPlease confirm Pfam database is decompressed and in HMMER's required profile format.\n"
+	printf "\nERROR: [-p] does not point to a profile compatible with HMMER.\n\tPlease confirm Pfam database is decompressed and in HMMER's required profile format."
 	ERROR=`echo "TRUE"`
 fi
 
 if [[ ! -d ${PFAM_DIR} ]]; then
-	printf "\nERROR: Directory containing target Pfam models and their seeds [-m] is missing, does not exist, or is not a directory.\n"
+	printf "\nERROR: Directory containing target Pfam models and their seeds [-m] is missing, does not exist, or is not a directory."
 	ERROR=`echo "TRUE"`
 fi
 
 if [[ ! -d ${DATASET_DIR} ]]; then
-	printf "\nERROR: Dataset directory argument [-d] does not exist or is not a directory.\n"
+	printf "\nERROR: Dataset directory argument [-d] does not exist or is not a directory."
 	ERROR=`echo "TRUE"`
 fi
 
@@ -229,7 +230,7 @@ do
   	fi
 done
 if [[ ${#FASTA_FILES[@]} == "0" ]]; then
-	printf "\nERROR: Dataset directory [-d] does not contain any files in fasta format.\n\tIf [-d] not specified, then none were found in pwd.\n"
+	printf "\nERROR: Dataset directory [-d] does not contain any files in fasta format.\n\tIf [-d] not specified, then none were found in pwd."
 	ERROR=`echo "TRUE"`
 fi
 
@@ -239,14 +240,14 @@ if [[ -d ${PFAM_DIR} ]]; then
 		HMM_FORMAT=`head -1 ${HMM} | awk '{print $1}' | awk -F"/" '{print $1}'`
 		MODEL_FILE_NAME=`echo "${HMM}" | awk -F"/" '{print $(NF)}'`
 		if [[ ${HMM_FORMAT} != "HMMER3" ]]; then
-			printf	"\nERROR: ${MODEL_FILE_NAME} is not in the correct format for analysis.\n\tPlease confirm this file is a .hmm file compatible with HMMER.\n"
+			printf	"\nERROR: ${MODEL_FILE_NAME} is not in the correct format for analysis.\n       Please confirm this file is a .hmm file compatible with HMMER."
 			ERROR=`echo "TRUE"`
 		fi
 	done
 fi
 
 if [[ -d "${OUTPUT_DIR}" ]]; then
-        printf "\nERROR: Output directory exists. Please rename and try again.\n"
+        printf "\nERROR: Output directory exists. Please rename and try again."
         ERROR=`echo "TRUE"`
 fi
 
@@ -257,14 +258,29 @@ if [[ ${ERROR} == "FALSE" ]]; then
 		MODEL_SEED_NAME=`echo "${MODEL_FILE_NAME}" | awk -F"." '{print $1}' | sed 's/$/.fasta/'` # Create a variable which possessed the name for the model seed
 
 		if ! [[ -s "${PFAM_DIR}${MODEL_SEED_NAME}" ]]; then # Loop checks for the presense of model seed fasta for each model HMM
-			printf  "\n\tERROR: ${MODEL_SEED_NAME} does not exist or is not named properly.\n"
+			printf  "\nERROR: ${MODEL_SEED_NAME} does not exist or is not named properly."
 			ERROR=`echo "TRUE"`
 		fi
 	done
 fi
 
+for BASE_MODEL in ${PFAM_DIR}*.hmm #Check that all target models are the same model as the version in the local Pfam database
+do
+	MODEL_FILE_NAME=`echo ${BASE_MODEL} | awk -F"/" '{print $(NF)}'` #Load model file name
+	MODEL_NAME=`grep 'NAME' ${BASE_MODEL} | awk '{print $2}'` #Load model name
+	MODEL_ACCESSION=`grep 'ACC' ${BASE_MODEL} | awk '{print $2}'` # Load model accession
+	PFAM_MODEL_ACCESSION=`egrep -A 1 "NAME *${MODEL_NAME}$" ${PFAM_DB_PATH} | grep -v "${MODEL_NAME}" | awk '{print $2}'` #Load model accession from PfamDB
+
+	if [[ ${MODEL_ACCESSION} != ${PFAM_MODEL_ACCESSION} ]]; then
+		printf "\nERROR: ${MODEL_NAME} domain accessions do not match between singular model and Pfam DB entry."
+		printf "\n       ${MODEL_FILE_NAME}: ${MODEL_ACCESSION}"
+		printf "\n       Pfam DB entry: ${PFAM_MODEL_ACCESSION}"
+		ERROR=`echo "TRUE"`
+	fi
+done
+
 if [[ ${ERROR} == "TRUE" ]]; then #If any errors above, exit.
-	printf "\nExiting...\n"
+	printf "\n\nPlease check the ERROR reports above and try again.\n"
 	exit 1
 fi
 
