@@ -68,6 +68,8 @@ grep 'PF01582' Pfam-A.hmm.dat | awk '{print $(NF)}' > Pfam_model_bait.txt #Obtai
 grep 'PF05729' Pfam-A.hmm.dat | awk '{print $(NF)}' >> Pfam_model_bait.txt
 
 ../TIAMMAt/Support_scripts/Grab_models.sh Pfam_model_bait.txt Pfam-A.hmm Pfam-A.seed #Obtain & format domain profiles and unaligned seed alignments for tiammat
+
+#Run tiammat
 cd ..
 TIAMMAt/tiammat -d Proteomes/ -m PfamModels/ -p Pfam-A.hmm 
 ```
