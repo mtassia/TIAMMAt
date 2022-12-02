@@ -4,9 +4,8 @@
 ###### *The TIAMMAt manuscript is available via [MBE open-access](https://academic.oup.com/mbe/article/38/12/5806/6359823)*
 ---
 ### DESCRIPTION:
-_**Preamble: TIAMMAt and its application to immune-gene evolution is currently in the revision process for submission**_
 
-In its current state, Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds reflect a dramatic biomedical species bias. As such, standard Pfam-A domain models appear to underestimate the number of homologous domains within non-model species transcriptome/genome datasets. **TIAMMAt** (pronounced *TEE-a-mat* or *TEE-a-maht*) aims to improve species/sequence diversity intrinsically represented within individual Pfam domain profile seed alignments.
+Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds reflect a dramatic biomedical species bias. As such, standard Pfam-A domain models appear to underestimate the number of homologous domains within non-model species transcriptome/genome datasets. **TIAMMAt** (pronounced *TEE-a-mat* or *TEE-a-maht*) aims to improve species/sequence diversity intrinsically represented within individual Pfam domain profile seed alignments.
 
 ##### The program is operationally organized into three main blocks (detailed diagram can be seen below):
 1) Search amino acid datasets for best-hit motifs to the target domain(s)  
