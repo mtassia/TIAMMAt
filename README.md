@@ -46,15 +46,28 @@ git clone https://github.com/mtassia/TIAMMAt.git
 mkdir Proteomes 
 mkdir PfamModels 
 wget http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz
-gzip -d Pfam-A.hmm.gz #Decompress pfam database
+gzip -d *.gz #Decompress pfam database
+hmmfetch --index Pfam-A.hmm #Index Pfam database for easy extraction of input domain profiles
+
+#Set-up Proteomes directory
 cd Proteomes/
 wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/003/605/GCF_000003605.2_Skow_1.1/GCF_000003605.2_Skow_1.1_protein.faa.gz #Download example proteome 1
 wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/224/145/GCF_000224145.3_KH/GCF_000224145.3_KH_protein.faa.gz #Download example proteome 2
 gzip -d * #Decompress downloaded proteoms
+
+#Set-up PfamModels directory
 cd ..
 cd PfamModels/
-printf "PF01582\nPF05729\n" > Pfam_model_bait.txt #Create list of example Pfam domain IDs to be obtained using Grab_models.sh
-../TIAMMAt/Support_scripts/Grab_models.sh Pfam_model_bait.txt #Obtain & format domain profiles and unaligned seed alignments for tiammat
+
+wget http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.dat.gz #Low-weight metadata used to get up-to-date accession for target domains
+wget http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.seed.gz #STOCKHOLM formatted sed alignments
+gzip -d *.gz #
+esl-afetch --index Pfam-A.seed #Index seed alignments for quick searching
+
+grep 'PF01582' Pfam-A.hmm.dat | awk '{print $(NF)}' > Pfam_model_bait.txt #Obtain example Pfam domain IDs for current Pfam version for Grab_models.sh
+grep 'PF05729' Pfam-A.hmm.dat | awk '{print $(NF)}' >> Pfam_model_bait.txt
+
+../TIAMMAt/Support_scripts/Grab_models.sh Pfam_model_bait.txt Pfam-A.hmm Pfam-A.seed #Obtain & format domain profiles and unaligned seed alignments for tiammat
 cd ..
 TIAMMAt/tiammat -d Proteomes/ -m PfamModels/ -p Pfam-A.hmm 
 ```
@@ -160,7 +173,7 @@ To check input, the top lines of `SCRIPT_LOG.txt` report the input files.
 * If base domain accession used for input does not match the accession present in Pfam (e.g., if TIR domain accession PF01582.22 is a target domain (`-m`), but not present in the local Pfam database (`-p`)), TIAMMAt will complete its run with no findings (even if homologous domains are present). See **INPUTS** section above.
 
 ---
-### UPCOMING CHANGES:
+### PLANNED CHANGES:
 * Input QC testing for input amino acid file, not nucleotide.
 * Improvements to error reporting.
 
