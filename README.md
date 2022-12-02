@@ -67,7 +67,7 @@ esl-afetch --index Pfam-A.seed #Index seed alignments for quick searching
 grep 'PF01582' Pfam-A.hmm.dat | awk '{print $(NF)}' > Pfam_model_bait.txt #Obtain example Pfam domain IDs for current Pfam version for Grab_models.sh
 grep 'PF05729' Pfam-A.hmm.dat | awk '{print $(NF)}' >> Pfam_model_bait.txt
 
-../TIAMMAt/Support_scripts/Grab_models.sh Pfam_model_bait.txt Pfam-A.hmm Pfam-A.seed #Obtain & format domain profiles and unaligned seed alignments for tiammat
+../TIAMMAt/Support_scripts/Grab_models.sh Pfam_model_bait.txt ../Pfam-A.hmm Pfam-A.seed #Obtain & format domain profiles and unaligned seed alignments for tiammat
 
 #Run tiammat
 cd ..
