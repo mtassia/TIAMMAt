@@ -20,9 +20,10 @@ Included in this repository:
 - `Best_fit_domains.py` (requires `Python3` + `re` and `sys` modules)
 - `Test_fasta.py` (requires `Python3` + `BioPython`)
 
-Required 3rd-party software:
+Required external software (both available via `anaconda`):
 - `HMMER` version 3.1b2+ (Available at http://hmmer.org/; users should follow the installation instructions provided by HMMER prior to running TIAMMAt)
-- `BioPython` for `Python3` (can be installed with `pip install biopython`)
+- `BioPython` version 1.80 for `Python3`
+
 
 ---
 ### USAGE:
