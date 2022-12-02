@@ -1,7 +1,7 @@
 # TIAMMAt: *Taxon-Informed Adjustment of Markov-Model Attributes*
 
 #### TIAMMAt is a bioinformatic tool aimed at improving the representation of non-model species within Pfam domain profile HMMs.
-###### *TIAMMAt is currently under manuscript revision and is undergoing updates; please contact me for further detail if you would like to use the tool before publication.*
+###### *The TIAMMAt manuscript is available via [MBE open-access](https://academic.oup.com/mbe/article/38/12/5806/6359823)*
 ---
 ### DESCRIPTION:
 _**Preamble: TIAMMAt and its application to immune-gene evolution is currently in the revision process for submission**_
