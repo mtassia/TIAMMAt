@@ -3,12 +3,13 @@
 ### Table of contents
 1. [Description](#description)
 2. [Dependencies](#dependencies)
-3. [Usage](#usage)
-4. [Inputs](#inputs)
-5. [Outputs](#outputs)
-6. [Known Issues](#known_issues)
-7. [Planned Changes](#planned_changes)
-8. [Support Scripts](#support_scripts)
+3. [Installation](#installation)
+4. [Usage](#usage)
+5. [Inputs](#inputs)
+6. [Outputs](#outputs)
+7. [Known Issues](#known_issues)
+8. [Planned Changes](#planned_changes)
+9. [Support Scripts](#support_scripts)
 
 ---
 <a name="description"/>
@@ -35,9 +36,35 @@ Included in this repository:
 - `Test_fasta.py` (requires `Python3` + `BioPython`)
 
 Required external software (both available via `anaconda`):
-- `HMMER` version 3.1b2+ (Available at http://hmmer.org/; users should follow the installation instructions provided by HMMER prior to running TIAMMAt)
+- `HMMER` version 3.1b2+ (Available at http://hmmer.org/; users can also install `easel` through the HMMER distribution)
 - `BioPython` version 1.80 for `Python3`
 
+---
+<a name="installation"/>
+
+### INSTALLATION  
+Installation of `TIAMMAt` on most platforms will only require installation of the software packages above (i.e., `HMMER` and `BioPython`). The recommended method for installation is via [Anaconda](https://www.anaconda.com/products/distribution) in a clean environment. The conda installation of `HMMER` installs `easel` tools by default.
+```
+conda create -n TIAMMAt
+conda activate TIAMMAt
+
+conda install -c bioconda hmmer
+conda install -c conda-forge biopython
+git clone https://github.com/mtassia/TIAMMAt.git 
+```
+Some users have reported issues when `readlink` is not preconfigured in their local environment. If `readlink` is not available, the tool can be acquired through the GNU `coreutils` [distribution](https://www.gnu.org/software/coreutils/) or installed in the working anaconda environment with `conda install -c conda-forge coreutils`.
+
+***M1/M2 MAC***  
+`HMMER` is not currently compatible with ARM64 systems. Instead, an Anaconda environment has to be preconfigured before installing dependencies.
+```
+CONDA_SUBDIR=osx-64 conda create -n TIAMMAt_x86
+conda activate TIAMMAt_x86
+conda config --env --set subdir osx-64
+
+conda install -c bioconda hmmer
+conda install -c conda-forge biopython
+git clone https://github.com/mtassia/TIAMMAt.git 
+``` 
 
 ---
 <a name="usage"/>
