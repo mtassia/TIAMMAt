@@ -1,19 +1,33 @@
-# TIAMMAt: *Taxon-Informed Adjustment of Markov-Model Attributes*
+# TIAMMAt: *Taxon-Informed Adjustment of Markov-Model Attributes*  
 
-#### TIAMMAt is a bioinformatic tool aimed at improving the representation of non-model species within Pfam domain profile HMMs.
-###### *The TIAMMAt manuscript is available via [MBE open-access](https://academic.oup.com/mbe/article/38/12/5806/6359823)*
+### Table of contents
+1. [Description](#description)
+2. [Dependencies](#dependencies)
+3. [Usage](#usage)
+4. [Inputs](#inputs)
+5. [Outputs](#outputs)
+6. [Known Issues](#known_issues)
+7. [Planned Changes](#planned_changes)
+8. [Support Scripts](#support_scripts)
+
 ---
-### DESCRIPTION:
+<a name="description"/>
+
+### DESCRIPTION 
+
+**TIAMMAt is a bioinformatic tool aimed at improving the representation of non-model species within Pfam domain profile HMMs.** *The TIAMMAt manuscript is available via [MBE open-access](https://academic.oup.com/mbe/article/38/12/5806/6359823)*
 
 Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds reflect a dramatic biomedical species bias. As such, standard Pfam-A domain models appear to underestimate the number of homologous domains within non-model species transcriptome/genome datasets. **TIAMMAt** (pronounced *TEE-a-mat* or *TEE-a-maht*) aims to improve species/sequence diversity intrinsically represented within individual Pfam domain profile seed alignments.
 
-##### The program is operationally organized into three main blocks (detailed diagram can be seen below):
+**The program is operationally organized into three main blocks (detailed diagram can be seen below):**  
 1) Search amino acid datasets for best-hit motifs to the target domain(s)  
 2) Revise each domain profile HMM to account for homologous sequence variation captured in (1)  
 3) Final scan of all amino acid datasets for Pfam-A entries including all revised domains
 
 ---
-### DEPENDENCIES:
+<a name="dependencies"/>
+
+### DEPENDENCIES
 Included in this repository:
 - `Pull_coordinates.py` (requires `Python3` + `BioPython`).
 - `Select_contigs.pl` (Written by J.D. White; requires `Perl`)
@@ -26,7 +40,10 @@ Required external software (both available via `anaconda`):
 
 
 ---
-### USAGE:
+<a name="usage"/>
+
+
+### USAGE
 
 ```
 > /path/to/tiammat [options] -m [directory] -p [/path/to/Pfam-A.hmm]
@@ -76,7 +93,9 @@ TIAMMAt/tiammat -d Proteomes/ -m PfamModels/ -p Pfam-A.hmm
 ```
 
 ---
-### INPUTS:
+<a name="inputs"/>
+
+### INPUTS
 For each domain of interest, the seed (an unaligned fasta file obtainable from the "**Alignments**" section for any domain in Pfam) and the model (raw HMM obtained from the "**Curation & model**" section for any given domain in Pfam) must be downloaded from the Pfam server (http://pfam.xfam.org/). Within the model directory (`-m`), the prefix naming convention must be identical for each domain (e.g., *PF00069_Pkinase*.fasta & *PF00069_Pkinase*.hmm). Alternatively, `Grab_models.sh` (included in the *Support_scripts* directory of TIAMMAt) can be used to generate the files required in the model directory (see **Support Scripts** section below).
 
 The Pfam database can be acquired directly from the Pfam webserver (http://pfam.xfam.org/). Alternatively, the following commands can be executed in shell:
@@ -105,7 +124,9 @@ CAUTION: `tiammat` *should not* be run with nucleotide input - cannot currently 
 See *Known Issues* section below.
 
 ---
-### OUTPUTS:
+<a name="outputs"/>
+
+### OUTPUTS
 **Output structure:**
 ```bash
 TIAMMAt_output_[WkDay]_[Month]_[Year]/ #Default output directory created by program
@@ -171,17 +192,23 @@ Users primarily interested in the revised domain profile-HMMs can find their rev
 To check input, the top lines of `SCRIPT_LOG.txt` report the input files.
 
 ---
-### KNOWN ISSUES:
+<a name="known_issues"/>
+
+### KNOWN ISSUES
 
 * If base domain accession used for input does not match the accession present in Pfam (e.g., if TIR domain accession PF01582.22 is a target domain (`-m`), but not present in the local Pfam database (`-p`)), TIAMMAt will complete its run with no findings (even if homologous domains are present). See **INPUTS** section above.
 
 ---
-### PLANNED CHANGES:
+<a name="planned_changes"/>
+
+### PLANNED CHANGES
 * Input QC testing for input amino acid file, not nucleotide.
 * Improvements to error reporting.
 
 ---
-### SUPPORT SCRIPTS:
+<a name="support_scripts"/>
+
+### SUPPORT SCRIPTS
 These programs must be manually executed - they are not run by TIAMMAt. Organized alphabetically below.
 
 **`Domain_svgwrite.py`:** Uses the `[name].besthits.tsv` input from TIAMMAt and generates a domain diagram object per annotated sequence into a single editable svg canvas.
@@ -233,5 +260,7 @@ These programs must be manually executed - they are not run by TIAMMAt. Organize
 * *USAGE:* `Stockholm2fasta.py [input_stockholm] [output_fasta]`
 
 ---
-### PIPELINE:
+<a name="pipeline"/>
+
+### PIPELINE
 ![RelaxedDomainSearch Pipeline](https://github.com/mtassia/RelaxedDomainSearch/blob/master/Program_diagram.png)
