@@ -23,7 +23,9 @@ Pfam-A profile HMMs are derived of representative seed alignments encompassing c
 **The program is operationally organized into three main blocks (detailed diagram can be seen below):**  
 1) Search amino acid datasets for best-hit motifs to the target domain(s)  
 2) Revise each domain profile HMM to account for homologous sequence variation captured in (1)  
-3) Final scan of all amino acid datasets for Pfam-A entries including all revised domains
+3) Final scan of all amino acid datasets for Pfam-A entries including all revised domains  
+
+***Note:*** *As of January 2023, the Pfam database is hosted via [InterPro](https://www.ebi.ac.uk/interpro/). Instructions have been changed to reflect this migration.*
 
 ---
 <a name="dependencies"/>
@@ -123,9 +125,10 @@ TIAMMAt/tiammat -d Proteomes/ -m PfamModels/ -p Pfam-A.hmm
 <a name="inputs"/>
 
 ### INPUTS
-For each domain of interest, the seed (an unaligned fasta file obtainable from the "**Alignments**" section for any domain in Pfam) and the model (raw HMM obtained from the "**Curation & model**" section for any given domain in Pfam) must be downloaded from the Pfam server (http://pfam.xfam.org/). Within the model directory (`-m`), the prefix naming convention must be identical for each domain (e.g., *PF00069_Pkinase*.fasta & *PF00069_Pkinase*.hmm). Alternatively, `Grab_models.sh` (included in the *Support_scripts* directory of TIAMMAt) can be used to generate the files required in the model directory (see **Support Scripts** section below).
 
-The Pfam database can be acquired directly from the Pfam webserver (http://pfam.xfam.org/). Alternatively, the following commands can be executed in shell:
+For each domain of interest, the seed sequences (an unaligned fasta file obtainable from the "**Alignments**" section for any domain in Pfam) and the model (raw HMM profile obtained from the "**Curation**" section for any given domain in Pfam) must be downloaded from the [InterPro-hosted Pfam database](https://www.ebi.ac.uk/interpro/entry/pfam/#table). Within the model directory (`-m`), the prefix naming convention must be identical for each domain (e.g., *PF00069_Pkinase*.fasta & *PF00069_Pkinase*.hmm). Alternatively, `Grab_models.sh` (included in the *Support_scripts* directory of TIAMMAt) can be used to generate the files required in the model directory (see [**Support Scripts**]((#support_scripts)) section below).
+
+The Pfam database can be acquired from the [Pfam FTP](https://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/). The following shell commands can be used:
 ```
 wget http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz #Download compressed pfam database
 gzip -d Pfam-A.hmm.gz #Decompress
@@ -133,7 +136,7 @@ gzip -d Pfam-A.hmm.gz #Decompress
 
 Additionally, confirm the domain models and the Pfam database input (`-p`) are the same version before running TIAMMAt. This can be confirmed by searching for the domain accession(s) in the local uncompressed `Pfam-A.hmm` (e.g., via `grep`). `tiammat` will report an error and exit if versions differ between individual domain profiles and the entry within the local Pfam DB.
 
-**Example input structure (from Example Workflow):**
+**Example input structure:**
 - `-d /path/to/Proteomes/` contains:
   >- ProteomeA.fa
   >- ProteomeB.fasta
@@ -245,9 +248,9 @@ These programs must be manually executed - they are not run by TIAMMAt. Organize
 
 ![Domain_diagram](https://github.com/mtassia/RelaxedDomainSearch/blob/master/Domain_SVGwrite_example.PNG)
 
-**`Grab_models.sh`:** Reads a list of pfam accessions and automatically downloads both the input `*.hmm` and seed fasta files into `pwd`. Automatically runs `Stockholm2fasta.py` below. This script is particularly useful when revising multiple Pfam models.
-* *DEPENDENCIES:* `Python3`, `BioPython` (both dependencies are required for `Stockholm2fasta.py` which is run by `Grab_models.sh`)
-* *USAGE:* `Grab_models.sh [pfam_accession_list.txt]`
+**`Grab_models.sh`:** Reads a list of pfam accessions and automatically acquires both the input `*.hmm` and seed fasta files into `pwd`. Automatically runs `Stockholm2fasta.py` below. This script is particularly useful when revising multiple Pfam models.
+* *DEPENDENCIES:* `Python3`, `BioPython` (both dependencies are required for `Stockholm2fasta.py` which is run by `Grab_models.sh`). `Pfam-A.hmm` and `Pfam-A.seed` can both be downloaded [here](http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/).
+* *USAGE:* `Grab_models.sh [pfam_accession_list.txt] [Pfam-A.hmm] [Pfam-A.seed]`
 * *INPUT FILE EXAMPLE:*
 	```
 	PF00554
