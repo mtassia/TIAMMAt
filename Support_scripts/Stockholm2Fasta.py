@@ -15,7 +15,7 @@ ALIGNMENT=AlignIO.read(STOCKHOLM_FILE,"stockholm")
 
 for RECORD in ALIGNMENT:
 	RECORD.letter_annotations={}
-	RECORD.seq=RECORD.seq.ungap('-')
-	RECORD.seq=RECORD.seq.ungap('.')
+	RECORD.seq=RECORD.seq.replace('-',"")
+	RECORD.seq=RECORD.seq.replace('.',"")
 	SeqIO.write(RECORD,OUTPUT_FASTA,"fasta")
 

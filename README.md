@@ -1,31 +1,78 @@
-# TIAMMAt: *Taxon-Informed Adjustment of Markov-Model Attributes*
+# TIAMMAt: *Taxon-Informed Adjustment of Markov-Model Attributes*  
 
-#### TIAMMAt is a bioinformatic tool aimed at improving the representation of non-model species within Pfam domain profile HMMs.
-###### *The TIAMMAt manuscript is available via [MBE open-access](https://academic.oup.com/mbe/article/38/12/5806/6359823)*
+### Table of contents
+1. [Description](#description)
+2. [Dependencies](#dependencies)
+3. [Installation](#installation)
+4. [Usage](#usage)
+5. [Inputs](#inputs)
+6. [Outputs](#outputs)
+7. [Known Issues](#known_issues)
+8. [Planned Changes](#planned_changes)
+9. [Support Scripts](#support_scripts)
+
 ---
-### DESCRIPTION:
+<a name="description"/>
+
+### DESCRIPTION 
+
+**TIAMMAt is a bioinformatic tool aimed at improving the representation of non-model species within Pfam domain profile HMMs.** *The TIAMMAt manuscript is available via [MBE open-access](https://academic.oup.com/mbe/article/38/12/5806/6359823)*
 
 Pfam-A profile HMMs are derived of representative seed alignments encompassing curated sequences from select taxa. Due to taxonomic bias, domain seeds reflect a dramatic biomedical species bias. As such, standard Pfam-A domain models appear to underestimate the number of homologous domains within non-model species transcriptome/genome datasets. **TIAMMAt** (pronounced *TEE-a-mat* or *TEE-a-maht*) aims to improve species/sequence diversity intrinsically represented within individual Pfam domain profile seed alignments.
 
-##### The program is operationally organized into three main blocks (detailed diagram can be seen below):
+**The program is operationally organized into three main blocks (detailed diagram can be seen below):**  
 1) Search amino acid datasets for best-hit motifs to the target domain(s)  
 2) Revise each domain profile HMM to account for homologous sequence variation captured in (1)  
-3) Final scan of all amino acid datasets for Pfam-A entries including all revised domains
+3) Final scan of all amino acid datasets for Pfam-A entries including all revised domains  
+
+***Note:*** *As of January 2023, the Pfam database is hosted via [InterPro](https://www.ebi.ac.uk/interpro/). Instructions have been changed to reflect this migration.*
 
 ---
-### DEPENDENCIES:
+<a name="dependencies"/>
+
+### DEPENDENCIES
 Included in this repository:
 - `Pull_coordinates.py` (requires `Python3` + `BioPython`).
 - `Select_contigs.pl` (Written by J.D. White; requires `Perl`)
 - `Best_fit_domains.py` (requires `Python3` + `re` and `sys` modules)
 - `Test_fasta.py` (requires `Python3` + `BioPython`)
 
-Required 3rd-party software:
-- `HMMER` version 3.1b2+ (Available at http://hmmer.org/; users should follow the installation instructions provided by HMMER prior to running TIAMMAt)
-- `BioPython` for `Python3` (can be installed with `pip install biopython`)
+Required external software (both available via `anaconda`):
+- `HMMER` version 3.1b2+ (Available at http://hmmer.org/; users can also install `easel` through the HMMER distribution)
+- `BioPython` version 1.80 for `Python3`
 
 ---
-### USAGE:
+<a name="installation"/>
+
+### INSTALLATION  
+Installation of `TIAMMAt` on most platforms will only require installation of the software packages above (i.e., `HMMER` and `BioPython`). The recommended method for installation is via [Anaconda](https://www.anaconda.com/products/distribution) in a clean environment. The conda installation of `HMMER` installs `easel` tools by default.
+```
+conda create -n TIAMMAt
+conda activate TIAMMAt
+
+conda install -c bioconda hmmer
+conda install -c conda-forge biopython
+git clone https://github.com/mtassia/TIAMMAt.git 
+```
+Some users have reported issues when `readlink` is not preconfigured in their local environment. If `readlink` is not available, the tool can be acquired through the GNU `coreutils` [distribution](https://www.gnu.org/software/coreutils/) or installed in the working anaconda environment with `conda install -c conda-forge coreutils`.
+
+***M1/M2 MAC***  
+`HMMER` is not currently compatible with ARM64 systems. Instead, an Anaconda environment has to be preconfigured before installing dependencies.
+```
+CONDA_SUBDIR=osx-64 conda create -n TIAMMAt_x86
+conda activate TIAMMAt_x86
+conda config --env --set subdir osx-64
+
+conda install -c bioconda hmmer
+conda install -c conda-forge biopython
+git clone https://github.com/mtassia/TIAMMAt.git 
+``` 
+
+---
+<a name="usage"/>
+
+
+### USAGE
 
 ```
 > /path/to/tiammat [options] -m [directory] -p [/path/to/Pfam-A.hmm]
@@ -46,24 +93,42 @@ git clone https://github.com/mtassia/TIAMMAt.git
 mkdir Proteomes 
 mkdir PfamModels 
 wget http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz
-gzip -d Pfam-A.hmm.gz #Decompress pfam database
+gzip -d *.gz #Decompress pfam database
+hmmfetch --index Pfam-A.hmm #Index Pfam database for easy extraction of input domain profiles
+
+#Set-up Proteomes directory
 cd Proteomes/
 wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/003/605/GCF_000003605.2_Skow_1.1/GCF_000003605.2_Skow_1.1_protein.faa.gz #Download example proteome 1
 wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/224/145/GCF_000224145.3_KH/GCF_000224145.3_KH_protein.faa.gz #Download example proteome 2
 gzip -d * #Decompress downloaded proteoms
+
+#Set-up PfamModels directory
 cd ..
 cd PfamModels/
-printf "PF01582\nPF05729\n" > Pfam_model_bait.txt #Create list of example Pfam domain IDs to be obtained using Grab_models.sh
-../TIAMMAt/Support_scripts/Grab_models.sh Pfam_model_bait.txt #Obtain & format domain profiles and unaligned seed alignments for tiammat
+
+wget http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.dat.gz #Low-weight metadata used to get up-to-date accession for target domains
+wget http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.seed.gz #STOCKHOLM formatted sed alignments
+gzip -d *.gz #
+esl-afetch --index Pfam-A.seed #Index seed alignments for quick searching
+
+grep 'PF01582' Pfam-A.hmm.dat | awk '{print $(NF)}' > Pfam_model_bait.txt #Obtain example Pfam domain IDs for current Pfam version for Grab_models.sh
+grep 'PF05729' Pfam-A.hmm.dat | awk '{print $(NF)}' >> Pfam_model_bait.txt
+
+../TIAMMAt/Support_scripts/Grab_models.sh Pfam_model_bait.txt ../Pfam-A.hmm Pfam-A.seed #Obtain & format domain profiles and unaligned seed alignments for tiammat
+
+#Run tiammat
 cd ..
 TIAMMAt/tiammat -d Proteomes/ -m PfamModels/ -p Pfam-A.hmm 
 ```
 
 ---
-### INPUTS:
-For each domain of interest, the seed (an unaligned fasta file obtainable from the "**Alignments**" section for any domain in Pfam) and the model (raw HMM obtained from the "**Curation & model**" section for any given domain in Pfam) must be downloaded from the Pfam server (http://pfam.xfam.org/). Within the model directory (`-m`), the prefix naming convention must be identical for each domain (e.g., *PF00069_Pkinase*.fasta & *PF00069_Pkinase*.hmm). Alternatively, `Grab_models.sh` (included in the *Support_scripts* directory of TIAMMAt) can be used to generate the files required in the model directory (see **Support Scripts** section below).
+<a name="inputs"/>
 
-The Pfam database can be acquired directly from the Pfam webserver (http://pfam.xfam.org/). Alternatively, the following commands can be executed in shell:
+### INPUTS
+
+For each domain of interest, the seed sequences (an unaligned fasta file obtainable from the "**Alignments**" section for any domain in Pfam) and the model (raw HMM profile obtained from the "**Curation**" section for any given domain in Pfam) must be downloaded from the [InterPro-hosted Pfam database](https://www.ebi.ac.uk/interpro/entry/pfam/#table). Within the model directory (`-m`), the prefix naming convention must be identical for each domain (e.g., *PF00069_Pkinase*.fasta & *PF00069_Pkinase*.hmm). Alternatively, `Grab_models.sh` (included in the *Support_scripts* directory of TIAMMAt) can be used to generate the files required in the model directory (see [**Support Scripts**]((#support_scripts)) section below).
+
+The Pfam database can be acquired from the [Pfam FTP](https://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/). The following shell commands can be used:
 ```
 wget http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz #Download compressed pfam database
 gzip -d Pfam-A.hmm.gz #Decompress
@@ -71,7 +136,7 @@ gzip -d Pfam-A.hmm.gz #Decompress
 
 Additionally, confirm the domain models and the Pfam database input (`-p`) are the same version before running TIAMMAt. This can be confirmed by searching for the domain accession(s) in the local uncompressed `Pfam-A.hmm` (e.g., via `grep`). `tiammat` will report an error and exit if versions differ between individual domain profiles and the entry within the local Pfam DB.
 
-**Example input structure (from Example Workflow):**
+**Example input structure:**
 - `-d /path/to/Proteomes/` contains:
   >- ProteomeA.fa
   >- ProteomeB.fasta
@@ -89,7 +154,9 @@ CAUTION: `tiammat` *should not* be run with nucleotide input - cannot currently 
 See *Known Issues* section below.
 
 ---
-### OUTPUTS:
+<a name="outputs"/>
+
+### OUTPUTS
 **Output structure:**
 ```bash
 TIAMMAt_output_[WkDay]_[Month]_[Year]/ #Default output directory created by program
@@ -155,17 +222,23 @@ Users primarily interested in the revised domain profile-HMMs can find their rev
 To check input, the top lines of `SCRIPT_LOG.txt` report the input files.
 
 ---
-### KNOWN ISSUES:
+<a name="known_issues"/>
+
+### KNOWN ISSUES
 
 * If base domain accession used for input does not match the accession present in Pfam (e.g., if TIR domain accession PF01582.22 is a target domain (`-m`), but not present in the local Pfam database (`-p`)), TIAMMAt will complete its run with no findings (even if homologous domains are present). See **INPUTS** section above.
 
 ---
-### UPCOMING CHANGES:
+<a name="planned_changes"/>
+
+### PLANNED CHANGES
 * Input QC testing for input amino acid file, not nucleotide.
 * Improvements to error reporting.
 
 ---
-### SUPPORT SCRIPTS:
+<a name="support_scripts"/>
+
+### SUPPORT SCRIPTS
 These programs must be manually executed - they are not run by TIAMMAt. Organized alphabetically below.
 
 **`Domain_svgwrite.py`:** Uses the `[name].besthits.tsv` input from TIAMMAt and generates a domain diagram object per annotated sequence into a single editable svg canvas.
@@ -175,9 +248,9 @@ These programs must be manually executed - they are not run by TIAMMAt. Organize
 
 ![Domain_diagram](https://github.com/mtassia/RelaxedDomainSearch/blob/master/Domain_SVGwrite_example.PNG)
 
-**`Grab_models.sh`:** Reads a list of pfam accessions and automatically downloads both the input `*.hmm` and seed fasta files into `pwd`. Automatically runs `Stockholm2fasta.py` below. This script is particularly useful when revising multiple Pfam models.
-* *DEPENDENCIES:* `Python3`, `BioPython` (both dependencies are required for `Stockholm2fasta.py` which is run by `Grab_models.sh`)
-* *USAGE:* `Grab_models.sh [pfam_accession_list.txt]`
+**`Grab_models.sh`:** Reads a list of pfam accessions and automatically acquires both the input `*.hmm` and seed fasta files into `pwd`. Automatically runs `Stockholm2fasta.py` below. This script is particularly useful when revising multiple Pfam models.
+* *DEPENDENCIES:* `Python3`, `BioPython` (both dependencies are required for `Stockholm2fasta.py` which is run by `Grab_models.sh`). `Pfam-A.hmm` and `Pfam-A.seed` can both be downloaded [here](http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/).
+* *USAGE:* `Grab_models.sh [pfam_accession_list.txt] [Pfam-A.hmm] [Pfam-A.seed]`
 * *INPUT FILE EXAMPLE:*
 	```
 	PF00554
@@ -217,5 +290,7 @@ These programs must be manually executed - they are not run by TIAMMAt. Organize
 * *USAGE:* `Stockholm2fasta.py [input_stockholm] [output_fasta]`
 
 ---
-### PIPELINE:
+<a name="pipeline"/>
+
+### PIPELINE
 ![RelaxedDomainSearch Pipeline](https://github.com/mtassia/RelaxedDomainSearch/blob/master/Program_diagram.png)
