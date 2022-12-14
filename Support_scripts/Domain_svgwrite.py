@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #CODE DEPENDENCIES:
 #	Python3.6+
 #	Python3 modules: re, sys, svgwrite
