@@ -249,7 +249,7 @@ These programs must be manually executed - they are not run by TIAMMAt. Organize
 ![Domain_diagram](https://github.com/mtassia/RelaxedDomainSearch/blob/master/Domain_SVGwrite_example.PNG)
 
 **`Grab_models.sh`:** Reads a list of pfam accessions and automatically acquires both the input `*.hmm` and seed fasta files into `pwd`. Automatically runs `Stockholm2fasta.py` below. This script is particularly useful when revising multiple Pfam models.
-* *DEPENDENCIES:* `Python3`, `BioPython` (both dependencies are required for `Stockholm2fasta.py` which is run by `Grab_models.sh`). `Pfam-A.hmm` and `Pfam-A.seed` can both be downloaded [here](http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/).
+* *DEPENDENCIES:* `Python3`, `BioPython` (both dependencies are required for `Stockholm2fasta.py` which is run by `Grab_models.sh`). `Pfam-A.hmm` and `Pfam-A.seed` can both be downloaded [here](http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/). `Pfam-A.seed` must be indexed first using `esl-afetch --index`
 * *USAGE:* `Grab_models.sh [pfam_accession_list.txt] [Pfam-A.hmm] [Pfam-A.seed]`
 * *INPUT FILE EXAMPLE:*
 	```
