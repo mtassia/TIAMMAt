@@ -79,6 +79,11 @@ fi
 #Grab models and seeds
 while read PFAM_ACCESSION
 do
+	if [[ `grep -c ${PFAM_ACCESSION} $PFAM_SEEDS | xargs` == 0 ]];then
+		echo "ERROR: ${PFAM_ACCESSION} not found, skipping..."
+		continue
+	fi
+
 	echo "...Obtaining ${PFAM_ACCESSION} profile HMM"
 	$HMMFETCH ${PFAM_DB_PATH} ${PFAM_ACCESSION} > hmm
 	NAME=`head hmm | grep 'NAME' | awk '{print $2}'`
