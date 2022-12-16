@@ -250,18 +250,18 @@ These programs must be manually executed - they are not run by TIAMMAt. Organize
 
 **`Grab_models.sh`:** Reads a list of pfam accessions and automatically acquires both the input `*.hmm` and seed fasta files into `pwd`. Automatically runs `Stockholm2fasta.py` below. This script is particularly useful when revising multiple Pfam models.
 * *DEPENDENCIES:* `Python3`, `BioPython` (both dependencies are required for `Stockholm2fasta.py` which is run by `Grab_models.sh`). `Pfam-A.hmm` and `Pfam-A.seed` can both be downloaded [here](http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/). `Pfam-A.seed` must be indexed first using `esl-afetch --index`
-* *USAGE:* `Grab_models.sh [pfam_accession_list.txt] [Pfam-A.hmm] [Pfam-A.seed]`
+* *USAGE:* `Grab_models.sh -i [pfam_accession_list.txt] -p [Pfam-A.hmm] -s [Pfam-A.seed]`
 * *INPUT FILE EXAMPLE:*
 	```
-	PF00554
-	PF00605
-	PF00619
-	PF01582
-	PF05729
-	PF10401
-	PF11648
-	PF12721
-	PF13676
+  PF00619.24
+  PF00605.20
+  PF10401.12
+  PF05729.15
+  PF00554.25
+  PF12721.10
+  PF11648.11
+  PF01582.23
+  PF13676.9
 	```
 * *OUTPUT:* `[Pfam_accession]_[Pfam_name].hmm` & `[Pfam_accession]_[Pfam_name].fasta` for every accession in `[pfam_accession_list.txt]`; example:
 	```

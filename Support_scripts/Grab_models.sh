@@ -84,6 +84,11 @@ do
 		continue
 	fi
 
+	if [[ ` echo "${PFAM_ACCESSION}" | grep -c "\." | xargs` != 1 ]];then
+		echo "ERROR: ${PFAM_ACCESSION} does not possess version number pull from seed databse; skipping..."
+		continue
+	fi
+
 	echo "...Obtaining ${PFAM_ACCESSION} profile HMM"
 	$HMMFETCH ${PFAM_DB_PATH} ${PFAM_ACCESSION} > hmm
 	NAME=`head hmm | grep 'NAME' | awk '{print $2}'`
